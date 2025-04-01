@@ -1,25 +1,33 @@
+п»їusing Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MovieRecAPI.Data;
+using movierec.Models;
+using TMDb.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Разрешаване на CORS - правилно добавяне на политика за React приложението
+// Р Р°Р·СЂРµС€Р°РІР°РЅРµ РЅР° CORS - РїСЂР°РІРёР»РЅРѕ РґРѕР±Р°РІСЏРЅРµ РЅР° РїРѕР»РёС‚РёРєР° Р·Р° React РїСЂРёР»РѕР¶РµРЅРёРµС‚Рѕ
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
-        policy => policy.WithOrigins("http://localhost:5173") // Портът на React приложението
-                        .AllowAnyMethod()  // Позволява всякакви HTTP методи
-                        .AllowAnyHeader()); // Позволява всякакви заглавки
+        policy => policy.WithOrigins("http://localhost:5173")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
 });
 
-// Зареждане на connection string-а от конфигурацията
+// Р—Р°СЂРµР¶РґР°РЅРµ РЅР° connection string-Р° РѕС‚ РєРѕРЅС„РёРіСѓСЂР°С†РёСЏС‚Р°
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<MovieRecDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Зареждане на API ключ и токен за TMDb API от конфигурацията
+// Р РµРіРёСЃС‚СЂРёСЂР°РЅРµ РЅР° ASP.NET Identity
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<MovieRecDbContext>()
+    .AddDefaultTokenProviders();
+
+// Р—Р°СЂРµР¶РґР°РЅРµ РЅР° API РєР»СЋС‡ Рё С‚РѕРєРµРЅ Р·Р° TMDb API РѕС‚ РєРѕРЅС„РёРіСѓСЂР°С†РёСЏС‚Р°
 builder.Services.AddHttpClient<TMDbService>(client =>
 {
     var apiKey = builder.Configuration["TMDb:ApiKey"];
@@ -36,7 +44,7 @@ builder.Services.AddHttpClient<TMDbService>(client =>
     }
 });
 
-// Регистриране на TMDbService за DI контейнера
+// Р РµРіРёСЃС‚СЂРёСЂР°РЅРµ РЅР° TMDbService Р·Р° DI РєРѕРЅС‚РµР№РЅРµСЂР°
 builder.Services.AddSingleton<TMDbService>();
 
 builder.Services.AddControllers();
@@ -45,7 +53,30 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Важно: CORS middleware трябва да е **преди** UseAuthorization()
+// РЎСЉР·РґР°РІР°РЅРµ РЅР° СЂРѕР»Рё РїСЂРё РїСЉСЂРІРѕС‚Рѕ СЃС‚Р°СЂС‚РёСЂР°РЅРµ
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+
+    string[] roles = { "Admin", "Normal User", "Cinema/Streaming Provider", "Guest" };
+
+    foreach (var role in roles)
+    {
+        var roleExist = await roleManager.RoleExistsAsync(role);
+        if (!roleExist)
+        {
+            var result = await roleManager.CreateAsync(new IdentityRole(role));
+            if (!result.Succeeded)
+            {
+                // Р›РѕРіРІР°РЅРµ РЅР° РіСЂРµС€РєРё Р°РєРѕ РёРјР° РїСЂРѕР±Р»РµРј СЃСЉСЃ СЃСЉР·РґР°РІР°РЅРµС‚Рѕ РЅР° СЂРѕР»СЏС‚Р°
+                Console.WriteLine($"Error creating role {role}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+        }
+    }
+}
+
+// Р’Р°Р¶РЅРѕ: CORS middleware С‚СЂСЏР±РІР° РґР° Рµ **РїСЂРµРґРё** UseAuthorization()
 app.UseCors("AllowReactApp");
 
 if (app.Environment.IsDevelopment())
@@ -55,6 +86,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Р”РѕР±Р°РІСЏРЅРµ РЅР° Authentication Рё Authorization Middleware
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.Run();
