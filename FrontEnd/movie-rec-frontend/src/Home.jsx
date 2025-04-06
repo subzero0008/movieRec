@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import SearchBar from './SearchBar'; // Импортирайте SearchBar компонента
-
+import { useAuth } from './AuthContext'; // Импортирайте хук или контекст за автентикация
+import Register from './Register'; // Импортирайте компонента за регистрация
+import Login from './Login'; // Импортирайте компонента за вход
 function Home() {
+  const user = useAuth(); // Проверка за автентикация
   const [trendingMovies, setTrendingMovies] = useState([]); // Състояние за trending movies
   const [searchResults, setSearchResults] = useState([]); // Състояние за резултати от търсенето
   const [loading, setLoading] = useState(true);
@@ -10,6 +13,11 @@ function Home() {
   const [isSearching, setIsSearching] = useState(false); // Флаг, който показва дали се извършва търсене
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+  // Ако потребителят не е автентикиран, пренасочваме към страницата за вход
+  if (!user) {
+    return <Redirect to="/login" />;
+  }
 
   // Функция за търсене на филми
   const handleSearch = async (query) => {
@@ -109,6 +117,13 @@ function Home() {
           <div className="text-white text-center mt-8">No movies found.</div>
         )}
       </div>
+
+      {/* Линк за вход, ако потребителят не е автентикиран */}
+      {!user && (
+        <div className="text-center mt-8">
+          <Link to="/login" className="text-blue-400">Влезте в акаунта си</Link>
+        </div>
+      )}
     </div>
   );
 }
