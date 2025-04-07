@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { login } from './services/authService';
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     if (!formData.identifier.trim() || !formData.password) {
       setError('Моля попълнете всички полета');
       return;
@@ -32,16 +33,23 @@ const Login = () => {
     setIsLoading(true);
     try {
       const response = await login(formData.identifier, formData.password);
+
+      // Ако id идва от response.user, сетваме го директно
+      const user = response.user;
+      const token = response.token;
+
       authLogin({
-        username: formData.identifier,
-        email: formData.identifier.includes('@') ? formData.identifier : null,
-        token: response.token || null
+        id: user.id,
+        username: user.userName,
+        email: user.email,
+        token
       });
+
       navigate('/');
     } catch (err) {
       const errorMessage = err.response?.data?.message || 
-                         err.message || 
-                         'Грешка при влизане. Моля опитайте отново.';
+                           err.message || 
+                           'Грешка при влизане. Моля опитайте отново.';
       setError(errorMessage);
     } finally {
       setIsLoading(false);

@@ -8,16 +8,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Проверяваме за потребител при зареждане
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
-        console.log("Stored User:", parsedUser);  // Лог за проверка на състоянието на потребителя
+        console.log("Loaded User ID:", parsedUser.id, "Type:", typeof parsedUser.id);
         setUser(parsedUser);
       } catch (error) {
-        console.error('Error parsing user data:', error);
-        localStorage.removeItem('user');
+        console.error("Parse error:", error);
       }
     }
   }, []);
