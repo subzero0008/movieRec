@@ -7,6 +7,8 @@ import Login from './Login';
 import { useAuth } from './AuthContext'; // Контекст за автентикация
 import { AuthProvider } from './AuthContext'; // Импортиране на AuthProvider
 import Profile from './Profile'; // Импортирайте компонента Profile
+import WatchedMoviesList from './components/WatchedMoviesList';
+
 
 function App() {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -104,6 +106,12 @@ function App() {
                   ) : (
                     <>
                       <span className="text-white mr-4">Welcome, {user.username}</span>
+                      <a
+  href="/watched"
+  className="px-4 py-2 mr-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+>
+  Гледани филми
+</a>
                       <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded-md">Logout</button>
                     </>
                   )}
@@ -146,6 +154,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/watched" element={user ? <WatchedMoviesList /> : <Navigate to="/login" />} />
+
       </Routes>
     </div>
   );

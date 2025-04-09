@@ -250,4 +250,13 @@ D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.KeyDeri
 D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.Extensions.Identity.Core.dll
 D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.Extensions.Identity.Stores.dll
+D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.Bcl.Memory.dll
+D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+D:\NewFolder\movierec\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+D:\NewFolder\movierec\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 D:\NewFolder\movierec\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

@@ -1,95 +1,198 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.OpenApi.Models;
 using MovieRecAPI.Data;
 using movierec.Models;
-using TMDb.Models;
+using System.Text.Json;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Разрешаване на CORS - правилно добавяне на политика за React приложението
+// Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
+
+
+// Configure CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
-        policy => policy.WithOrigins("http://localhost:5173")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+    options.AddPolicy("AllowReactApp", policy => policy
+        .WithOrigins("http://localhost:5173", "https://localhost:5173")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()
+        .WithExposedHeaders("Set-Cookie")); // Важно за бисквитки
 });
 
-// Зареждане на connection string-а от конфигурацията
+// Configure database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 builder.Services.AddDbContext<MovieRecDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Регистриране на ASP.NET Identity
-builder.Services.AddIdentity<AppUser, IdentityRole>()
-    .AddEntityFrameworkStores<MovieRecDbContext>()
-    .AddDefaultTokenProviders();
+// Configure Identity
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+})
+.AddEntityFrameworkStores<MovieRecDbContext>()
+.AddDefaultTokenProviders();
 
-// Зареждане на API ключ и токен за TMDb API от конфигурацията
+// Configure Authentication (JWT + Cookies)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JwtSettings:JwtIssuer"],
+        ValidAudience = builder.Configuration["JwtSettings:JwtAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:JwtKey"])),
+        ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context => // Четене на токен от бисквитка
+        {
+            if (context.Request.Cookies.TryGetValue("access_token", out var token))
+            {
+                context.Token = token;
+            }
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        }
+    };
+})
+.AddCookie(); // Добавяне на cookie authentication
+
+// Configure TMDb service
 builder.Services.AddHttpClient<TMDbService>(client =>
 {
+    client.BaseAddress = new Uri("https://api.themoviedb.org/3/");
     var apiKey = builder.Configuration["TMDb:ApiKey"];
     var accessToken = builder.Configuration["TMDb:AccessToken"];
 
     if (!string.IsNullOrEmpty(accessToken))
     {
-        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
     }
-
     if (!string.IsNullOrEmpty(apiKey))
     {
         client.DefaultRequestHeaders.Add("api_key", apiKey);
     }
 });
-
-// Регистриране на TMDbService за DI контейнера
 builder.Services.AddSingleton<TMDbService>();
 
-builder.Services.AddControllers();
+// Configure Swagger with JWT support
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "MovieRec API",
+        Version = "v1",
+        Description = "API for movie recommendations"
+    });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 
-// Създаване на роли при първото стартиране
+// Middleware pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieRec API v1");
+        c.RoutePrefix = "swagger";
+        c.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
+    });
+}
+
+// Initialize roles
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-
-    string[] roles = { "Admin", "Normal User", "Cinema/Streaming Provider", "Guest" };
+    var roles = new[] { "Admin", "Normal User", "Cinema/Streaming Provider", "Guest" };
 
     foreach (var role in roles)
     {
-        var roleExist = await roleManager.RoleExistsAsync(role);
-        if (!roleExist)
+        if (!await roleManager.RoleExistsAsync(role))
         {
-            var result = await roleManager.CreateAsync(new IdentityRole(role));
-            if (!result.Succeeded)
-            {
-                // Логване на грешки ако има проблем със създаването на ролята
-                Console.WriteLine($"Error creating role {role}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-            }
+            await roleManager.CreateAsync(new IdentityRole(role));
         }
     }
 }
 
-// Важно: CORS middleware трябва да е **преди** UseAuthorization()
-app.UseCors("AllowReactApp");
-
-if (app.Environment.IsDevelopment())
+// Custom error handling for APIs
+app.Use(async (context, next) =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    await next();
+    if (context.Response.StatusCode == 401 && context.Request.Path.StartsWithSegments("/api"))
+    {
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = "Unauthorized" }));
+    }
+});
 
 app.UseHttpsRedirection();
-
-// Добавяне на Authentication и Authorization Middleware
+app.UseRouting();
+app.UseCors("AllowReactApp"); // CORS before auth
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Security headers
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+    await next();
+});
 
 app.MapControllers();
 app.Run();

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using movierec.Models;
+using Newtonsoft.Json;
 
 public class Movie
 {
@@ -14,5 +15,7 @@ public class Movie
     [JsonProperty("vote_average")]
     public double VoteAverage { get; set; }
 
-    public string PosterUrl { get; set; } // Това ще бъде генерирано
+    public string PosterUrl { get; set; }
+
+    public virtual ICollection<MovieRating> Ratings { get; set; } = new List<MovieRating>();
 }

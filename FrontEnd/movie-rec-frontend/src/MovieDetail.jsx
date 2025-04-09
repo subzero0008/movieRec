@@ -4,14 +4,20 @@ import { useAuth } from './AuthContext';
 import RatingForm from './components/RatingForm';
 import RatingsSummary from './components/RatingsSummary';
 import ReviewsList from './components/ReviewsList';
+import { addToWatched, checkIfWatched, removeFromWatched } from './services/watchedMoviesService';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 function MovieDetail() {
-  const { id } = useParams();
+  const { id } = useParams(); // Тук получаваме id, не tmdbMovieId
   const [movie, setMovie] = useState(null);
   const [trailers, setTrailers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoadingTrailers, setIsLoadingTrailers] = useState(false);
   const { user } = useAuth();
+  
+  const [isWatched, setIsWatched] = useState(false);
+  const [isWatchedLoading, setIsWatchedLoading] = useState(false);
+  const [watchedError, setWatchedError] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
@@ -56,11 +62,61 @@ function MovieDetail() {
     return () => abortController.abort();
   }, [id, API_URL, YOUTUBE_API_KEY]);
 
+  useEffect(() => {
+    const checkWatchedStatus = async () => {
+      if (!user) return;
+      
+      try {
+        const { isWatched: status } = await checkIfWatched(id, user.token); // Добавен user.token
+        setIsWatched(status);
+      } catch (err) {
+        console.error('Error checking watched status:', err);
+      }
+    };
+    
+    checkWatchedStatus();
+  }, [id, user]);
+
   const handleRatingSubmit = () => {
-    // Можете да добавите логика за обновяване на данните след като бъде добавен нов рейтинг
     console.log('Rating submitted - refresh data if needed');
   };
 
+  const handleWatchedClick = async () => {
+    if (!user?.token) {
+      setWatchedError('Трябва да сте влезли в профила си');
+      return;
+    }
+  
+    if (!id) {
+      setWatchedError('Липсва ID на филма');
+      return;
+    }
+  
+    setIsWatchedLoading(true);
+    setWatchedError(null);
+    
+    try {
+      const movieId = parseInt(id); // Явно преобразуване
+      if (isNaN(movieId)) {
+        throw new Error('Невалиден формат на ID на филма');
+      }
+  
+      if (isWatched) {
+        await removeFromWatched(movieId, user.token);
+      } else {
+        await addToWatched(movieId, user.token);
+      }
+      setIsWatched(!isWatched);
+    } catch (error) {
+      const serverError = error.response?.data?.errors || 
+                        error.response?.data?.title ||
+                        error.message;
+      setWatchedError(`Грешка: ${JSON.stringify(serverError)}`);
+      console.error('Full Error:', error);
+    } finally {
+      setIsWatchedLoading(false);
+    }
+  };
   // Filter only official trailers
   const officialTrailers = trailers.filter((trailer) =>
     trailer.snippet.title.toLowerCase().includes("official trailer")
@@ -87,31 +143,56 @@ function MovieDetail() {
           </div>
           
           <div className="md:w-2/3">
-            <h1 className="text-4xl font-bold text-white mb-4">{movie.title}</h1>
+            <h1 className="text-4xl font-bold text-white mb-4">
+              {movie.title}
+              {isWatched && (
+                <span className="ml-3 text-yellow-400 text-sm align-middle bg-yellow-900 bg-opacity-50 px-2 py-1 rounded-full">
+                  Гледан
+                </span>
+              )}
+            </h1>
             <p className="text-lg text-white mb-6">{movie.overview || 'No synopsis available.'}</p>
             
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <p className="text-white">
-                  <span className="font-bold">Runtime:</span> {movie.runtime ? `${movie.runtime} minutes` : 'N/A'}
-                </p>
-                <p className="text-white">
-                  <span className="font-bold">Release Date:</span> {movie.releaseDate || 'N/A'}
-                </p>
+            <div className="flex flex-wrap gap-4 mb-6">
+              <div className="bg-gray-700 bg-opacity-50 px-3 py-1 rounded-full text-white">
+                <span className="font-bold">Runtime:</span> {movie.runtime ? `${movie.runtime} мин` : 'N/A'}
               </div>
-              <div>
-                <p className="text-white text-xl">
-                  <span className="font-bold">Rating:</span> ⭐ {movie.voteAverage ? movie.voteAverage.toFixed(1) : 'N/A'}/10
-                </p>
+              
+              <div className="bg-gray-700 bg-opacity-50 px-3 py-1 rounded-full text-white">
+                <span className="font-bold">Release:</span> {movie.releaseDate || 'N/A'}
               </div>
+              
+              <div className="bg-blue-900 bg-opacity-50 px-3 py-1 rounded-full">
+                <span className="font-bold text-white">Rating:</span> ⭐ {movie.voteAverage ? movie.voteAverage.toFixed(1) : 'N/A'}/10
+              </div>
+              
+              <button
+                onClick={handleWatchedClick}
+                disabled={isWatchedLoading}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md ${
+                  isWatched ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'
+                } text-white transition-colors`}
+              >
+                {isWatchedLoading ? (
+                  <span>Зареждане...</span>
+                ) : (
+                  <>
+                    {isWatched ? <FaEyeSlash /> : <FaEye />}
+                    <span>{isWatched ? 'Премахни от гледани' : 'Добави в гледани'}</span>
+                  </>
+                )}
+              </button>
             </div>
             
-            {/* Ratings Summary - добавено ново */}
+            {watchedError && (
+              <div className="text-red-500 text-sm -mt-3 mb-3">{watchedError}</div>
+            )}
+            
             <RatingsSummary movieId={id} />
           </div>
         </div>
 
-        {/* Trailers Section - запазен оригинален код */}
+        {/* Trailers Section */}
         {isLoadingTrailers && <p className="text-white text-center mt-8">Loading trailers...</p>}
 
         {officialTrailers.length > 0 && (
@@ -138,16 +219,14 @@ function MovieDetail() {
           <p className="text-white text-center mt-8">No official trailer found.</p>
         )}
 
-        {/* New Ratings & Reviews Section */}
+        {/* Ratings & Reviews Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-          {/* Rating Form - добавено ново (само за логнати потребители) */}
           {user && (
             <div className="lg:order-2">
               <RatingForm movieId={id} onRatingSubmit={handleRatingSubmit} />
             </div>
           )}
           
-          {/* Reviews List - добавено ново */}
           <div className={user ? "lg:order-1" : ""}>
             <ReviewsList movieId={id} />
           </div>

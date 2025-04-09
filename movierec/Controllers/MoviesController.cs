@@ -24,7 +24,7 @@ public class MoviesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetMovieDetails(int id)
     {
-        var data = await _tmdbService.GetMovieDetailsAsync(id);
+        var data = await _tmdbService.GetMovieDetailsWithCreditsAsync(id);  // Променено от GetMovieDetailsAsync на GetMovieDetailsWithCreditsAsync
         if (data == null)
         {
             return NotFound(new { message = "Movie not found" });

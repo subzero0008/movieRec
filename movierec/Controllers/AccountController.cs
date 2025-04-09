@@ -3,7 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using MovieRecAPI.Data;
 using movierec.Models;
 using System.Threading.Tasks;
-using movierec.DTOs;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace MovieRecAPI.Controllers
 {
@@ -13,86 +20,173 @@ namespace MovieRecAPI.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AccountController(
+            UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _configuration = configuration;
         }
 
         // POST: api/account/register
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
-            if (model.Password != model.ConfirmPassword)
-            {
-                return BadRequest(new { message = "Паролите не съвпадат" });
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var user = new AppUser { UserName = model.Username, Email = model.Email };
+            if (model.Password != model.ConfirmPassword)
+                return BadRequest("Passwords do not match");
+
+            var user = new AppUser
+            {
+                UserName = model.Username,
+                Email = model.Email
+            };
+
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
-                return Ok(new { message = "Регистрацията е успешна" });
+                return Ok(new { message = "Registration successful" });
             }
-            else
-            {
-                return BadRequest(new { message = "Неуспешна регистрация", errors = result.Errors });
-            }
+
+            return BadRequest(result.Errors);
         }
 
         // POST: api/account/login
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = model.Identifier.Contains('@')
+                ? await _userManager.FindByEmailAsync(model.Identifier)
+                : await _userManager.FindByNameAsync(model.Identifier);
+
+            if (user == null)
+                return Unauthorized("Invalid credentials");
+
+            var result = await _signInManager.PasswordSignInAsync(
+                user,
+                model.Password,
+                isPersistent: false,
+                lockoutOnFailure: true);
+
+            if (!result.Succeeded)
             {
-                AppUser user;
+                if (result.IsLockedOut)
+                    return Unauthorized("Account locked. Try again later.");
 
-                // Проверяваме дали въведеният имейл или username е валиден
-                if (model.Identifier.Contains('@')) // Проверяваме дали е имейл
-                {
-                    user = await _userManager.FindByEmailAsync(model.Identifier); // Търсим по имейл
-                }
-                else
-                {
-                    user = await _userManager.FindByNameAsync(model.Identifier); // Търсим по потребителско име
-                }
-
-                if (user == null)
-                {
-                    return Unauthorized(new { message = "Invalid username or password" });
-                }
-
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-
-                if (result.Succeeded)
-                {
-                    return Ok(new { message = "Login successful" });
-                }
-                else
-                {
-                    return Unauthorized(new { message = "Invalid username or password" });
-                }
+                return Unauthorized("Invalid credentials");
             }
 
-            return BadRequest(new { message = "Invalid data" });
+            // Генериране на JWT токен
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:JwtKey"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName)
+                }),
+                Issuer = _configuration["JwtSettings:JwtIssuer"],
+                Audience = _configuration["JwtSettings:JwtAudience"],
+                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:JwtExpireMinutes"])),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwtToken = tokenHandler.WriteToken(token);
+
+            // Записване на токена в HTTP-only бисквитка
+            Response.Cookies.Append("access_token", jwtToken, new Microsoft.AspNetCore.Http.CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict,
+                Expires = tokenDescriptor.Expires
+            });
+
+            // Връщане на токена и в тялото на отговора за фронтенда
+            return Ok(new
+            {
+                message = "Login successful",
+                user = new
+                {
+                    userName = user.UserName,
+                    email = user.Email,
+                    id = user.Id
+                },
+                token = jwtToken // Добавен токен за фронтенда
+            });
+        }
+
+        // POST: api/account/logout
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            Response.Cookies.Delete("access_token");
+            return Ok(new { message = "Logout successful" });
+        }
+
+        // GET: api/account/currentuser (допълнително)
+        [HttpGet("currentuser")]
+        [Authorize]
+        public IActionResult GetCurrentUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.FindFirstValue(ClaimTypes.Name);
+            var userEmail = User.FindFirstValue(JwtRegisteredClaimNames.Email);
+
+            return Ok(new
+            {
+                id = userId,
+                userName,
+                email = userEmail
+            });
         }
     }
 
-    // Модел за входните данни за регистрация
-    public class RegisterModel
+    public class RegisterDto
     {
+        [Required(ErrorMessage = "Username is required")]
+        [StringLength(20, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 20 characters")]
+        public string Username { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
         public string Email { get; set; }
+
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Confirm Password is required")]
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; }
     }
 
-    // Модел за входните данни за логин
-    public class LoginModel
+    public class LoginDto
     {
-        public string Identifier { get; set; } // Използваме Identifier за имейл или потребителско име
+        [Required(ErrorMessage = "Username or Email is required")]
+        public string Identifier { get; set; }
+
+        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
     }
 }
