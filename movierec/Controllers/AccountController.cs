@@ -160,9 +160,59 @@ namespace MovieRecAPI.Controllers
                 email = userEmail
             });
         }
+        [HttpPut("update-profile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto model)
+        {
+            if (string.IsNullOrWhiteSpace(model.NewUsername) && string.IsNullOrWhiteSpace(model.NewPassword))
+                return BadRequest("No changes provided");
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound("User not found");
+
+            // Потвърждение на текущата парола
+            var passwordValid = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+            if (!passwordValid)
+                return BadRequest("Invalid current password");
+
+            IdentityResult? passwordChangeResult = null;
+            IdentityResult? usernameChangeResult = null;
+
+            // Промяна на username
+            if (!string.IsNullOrWhiteSpace(model.NewUsername) && model.NewUsername != user.UserName)
+            {
+                var existingUser = await _userManager.FindByNameAsync(model.NewUsername);
+                if (existingUser != null)
+                    return BadRequest("Username is already taken");
+
+                user.UserName = model.NewUsername;
+                usernameChangeResult = await _userManager.UpdateAsync(user);
+                if (!usernameChangeResult.Succeeded)
+                    return BadRequest(usernameChangeResult.Errors);
+            }
+
+            // Промяна на парола
+            if (!string.IsNullOrWhiteSpace(model.NewPassword))
+            {
+                passwordChangeResult = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+                if (!passwordChangeResult.Succeeded)
+                    return BadRequest(passwordChangeResult.Errors);
+            }
+
+            return Ok(new
+            {
+                message = "Profile updated successfully",
+                username = user.UserName
+            });
+        }
     }
 
-    public class RegisterDto
+        public class RegisterDto
     {
         [Required(ErrorMessage = "Username is required")]
         [StringLength(20, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 20 characters")]

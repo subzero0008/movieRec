@@ -7,6 +7,7 @@ using movierec.Models;
 using movierec.DTOs;
 using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Logging;
 
 [Route("api/movieratings")]
 [ApiController]
@@ -16,18 +17,23 @@ public class MovieRatingsController : ControllerBase
     private readonly MovieRecDbContext _context;
     private readonly UserManager<AppUser> _userManager;
     private readonly ILogger<MovieRatingsController> _logger;
+    private readonly TMDbService _tmdbService;  // Add TMDbService
 
+    // Modify constructor to inject TMDbService
     public MovieRatingsController(
         MovieRecDbContext context,
         UserManager<AppUser> userManager,
-        ILogger<MovieRatingsController> logger)
+        ILogger<MovieRatingsController> logger,
+        TMDbService tmdbService)  // Inject TMDbService
     {
         _context = context;
         _userManager = userManager;
         _logger = logger;
+        _tmdbService = tmdbService;  // Store TMDbService
     }
 
-    [HttpPost("rate")]
+
+[HttpPost("rate")]
     [Authorize]
     public async Task<IActionResult> RateMovie([FromBody] RateMovieDto model)
     {
@@ -128,31 +134,31 @@ public class MovieRatingsController : ControllerBase
     {
         try
         {
-            // Валидация на userId
+            // Validate userId
             if (!Guid.TryParse(userId, out _))
             {
-                _logger.LogWarning("Невалиден формат на потребителския идентификатор: {UserId}", userId);
+                _logger.LogWarning("Invalid userId format: {UserId}", userId);
                 return BadRequest(new
                 {
                     Success = false,
-                    Message = "Невалиден формат на потребителския идентификатор"
+                    Message = "Invalid user ID format"
                 });
             }
 
-            // Проверка за достъп
+            // Check access permissions
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (currentUserId != userId)
             {
-                _logger.LogWarning("Опит за достъп до чужди рейтинги: {CurrentUserId} -> {UserId}",
+                _logger.LogWarning("Access attempt to another user's ratings: {CurrentUserId} -> {UserId}",
                     currentUserId, userId);
                 return Forbid();
             }
 
-            // Базова заявка
+            // Base query
             var query = _context.MovieRatings
                 .Where(r => r.UserId == userId);
 
-            // Прилагане на филтри
+            // Apply filters
             if (minRating.HasValue)
             {
                 query = query.Where(r => r.Rating >= minRating.Value);
@@ -163,24 +169,37 @@ public class MovieRatingsController : ControllerBase
                 query = query.Where(r => r.RatedOn >= fromDate.Value);
             }
 
-            // Пагинация
+            // Pagination
             var totalCount = await query.CountAsync();
-            var ratings = await query
+
+            // Fetch ratings into memory first (not async)
+            var ratingsList = await query
                 .OrderByDescending(r => r.RatedOn)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(r => new UserRatingDto
-                {
-                    MovieId = r.MovieId,
-                    Rating = r.Rating,
-                    RatedOn = r.RatedOn,
-                    Review = r.Review
-                })
-                .ToListAsync();
+                .ToListAsync(); // This will fetch ratings synchronously
 
-            _logger.LogInformation(
-                "Върнати {Count} от общо {TotalCount} рейтинга за потребител {UserId}",
-                ratings.Count, totalCount, userId);
+            // Now use async to fetch movie details for each rating
+            var userRatingsDto = new List<UserRatingDto>();
+
+            foreach (var rating in ratingsList)
+            {
+                var movieTitle = await GetMovieTitle(rating.MovieId); // Get movie title
+                var movieGenres = await GetMovieGenres(rating.MovieId); // Get movie genres
+
+                userRatingsDto.Add(new UserRatingDto
+                {
+                    MovieId = rating.MovieId,
+                    Rating = rating.Rating,
+                    RatedOn = rating.RatedOn,
+                    Review = rating.Review,
+                    MovieTitle = movieTitle,
+                    MovieGenres = movieGenres
+                });
+            }
+
+            _logger.LogInformation("Returned {Count} out of {TotalCount} ratings for user {UserId}",
+                userRatingsDto.Count, totalCount, userId);
 
             return Ok(new
             {
@@ -188,20 +207,42 @@ public class MovieRatingsController : ControllerBase
                 TotalCount = totalCount,
                 CurrentPage = page,
                 PageSize = pageSize,
-                Ratings = ratings
+                Ratings = userRatingsDto
             });
+
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Грешка при получаване на рейтинги за потребител {UserId}", userId);
+            _logger.LogError(ex, "Error fetching ratings for user {UserId}", userId);
             return StatusCode(500, new
             {
                 Success = false,
-                Message = "Възникна грешка при обработката на заявката",
+                Message = "An error occurred while processing the request",
                 Error = ex.Message
             });
         }
     }
+
+    // Fetch movie title by MovieId
+    private async Task<string> GetMovieTitle(int movieId)
+    {
+        var movieDetails = await _tmdbService.GetMovieDetailsWithCreditsAsync(movieId);
+        return movieDetails?.Title ?? "Unknown Movie";
+    }
+
+    // Fetch movie genres by MovieId
+    private async Task<List<string>> GetMovieGenres(int movieId)
+    {
+        var movieDetails = await _tmdbService.GetMovieDetailsWithCreditsAsync(movieId);
+
+        if (movieDetails != null && movieDetails.Genres != null)
+        {
+            return movieDetails.Genres.Select(g => g.Name).ToList();
+        }
+
+        return new List<string> { "Unknown Genre" };
+    }
+
     [HttpGet("{movieId}")] // Това е новият метод
     public async Task<IActionResult> GetMovieRatings(int movieId)
     {
@@ -310,6 +351,7 @@ public class UserRatingDto
     public int MovieId { get; set; }
     public double Rating { get; set; }
     public DateTime RatedOn { get; set; }
-    public string? Review { get; set; }
-    public string? MovieTitle { get; set; }
+    public string Review { get; set; }
+    public string MovieTitle { get; set; } // Existing property
+    public List<string> MovieGenres { get; set; } // New property
 }

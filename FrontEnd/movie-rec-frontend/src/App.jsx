@@ -4,11 +4,11 @@ import MovieCard from './MovieCard';
 import MovieDetail from './MovieDetail';
 import Register from './Register';
 import Login from './Login';
-import { useAuth } from './AuthContext'; // Контекст за автентикация
-import { AuthProvider } from './AuthContext'; // Импортиране на AuthProvider
-import Profile from './Profile'; // Импортирайте компонента Profile
+import { useAuth } from './AuthContext';
+import Profile from './Profile';
 import WatchedMoviesList from './components/WatchedMoviesList';
-
+import Navbar from './components/Navbar';
+import SearchResults from './components/SearchResults'; // Добавен новия компонент
 
 function App() {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -18,7 +18,7 @@ function App() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { user, logout } = useAuth() || {}; // Добавен logout
+  const { user, logout } = useAuth() || {};
   const API_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115/api';
 
   useEffect(() => {
@@ -75,6 +75,8 @@ function App() {
     logout();
   };
 
+  const moviesToDisplay = isSearching ? searchResults : trendingMovies;
+
   if (loading) {
     return <div className="text-white text-center mt-8">Loading...</div>;
   }
@@ -83,10 +85,16 @@ function App() {
     return <div className="text-red-500 text-center mt-8">{error}</div>;
   }
 
-  const moviesToDisplay = isSearching ? searchResults : trendingMovies;
-
   return (
     <div className="bg-gray-900 min-h-screen p-8">
+      <Navbar
+        user={user}
+        onLogout={handleLogout}
+        onSearch={handleSearch}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
+
       <Routes>
         <Route
           path="/"
@@ -95,38 +103,6 @@ function App() {
               <h1 className="text-4xl font-bold text-white text-center mb-12">
                 {isSearching ? 'Search Results' : 'Trending Movies'}
               </h1>
-
-              <div className="flex justify-between mb-8">
-                <div>
-                  {!user ? (
-                    <>
-                      <a href="/login" className="px-4 py-2 mr-4 bg-blue-500 text-white rounded-md">Login</a>
-                      <a href="/register" className="px-4 py-2 bg-green-500 text-white rounded-md">Register</a>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-white mr-4">Welcome, {user.username}</span>
-                      <a
-  href="/watched"
-  className="px-4 py-2 mr-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
->
-  Гледани филми
-</a>
-                      <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded-md">Logout</button>
-                    </>
-                  )}
-                </div>
-
-                <form onSubmit={handleSearch}>
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="px-4 py-2 rounded-md text-black"
-                  />
-                </form>
-              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {moviesToDisplay.length > 0 ? (
@@ -155,7 +131,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
         <Route path="/watched" element={user ? <WatchedMoviesList /> : <Navigate to="/login" />} />
-
+        <Route path="/search-results" element={<SearchResults />} /> {/* Добавен нов маршрут */}
       </Routes>
     </div>
   );

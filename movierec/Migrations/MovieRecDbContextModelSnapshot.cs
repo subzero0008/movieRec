@@ -44,7 +44,7 @@ namespace movierec.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("FavoriteMovies");
+                    b.ToTable("FavoriteMovies", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -208,7 +208,7 @@ namespace movierec.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies");
+                    b.ToTable("Movies", (string)null);
                 });
 
             modelBuilder.Entity("MovieRating", b =>
@@ -243,7 +243,7 @@ namespace movierec.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MovieRatings");
+                    b.ToTable("MovieRatings", (string)null);
                 });
 
             modelBuilder.Entity("movierec.Models.AppUser", b =>
@@ -356,7 +356,7 @@ namespace movierec.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("WatchedMovies");
+                    b.ToTable("WatchedMovies", (string)null);
                 });
 
             modelBuilder.Entity("FavoriteMovie", b =>

@@ -52,6 +52,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "MovieRecAPI.Controllers.AccountController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/Account/update-profile",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "UpdateProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "MovieRatingsController",
     "Method": "GetMovieRatings",
     "RelativePath": "api/movieratings/{movieId}",
