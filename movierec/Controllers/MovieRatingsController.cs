@@ -8,6 +8,7 @@ using movierec.DTOs;
 using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 [Route("api/movieratings")]
 [ApiController]
@@ -18,22 +19,25 @@ public class MovieRatingsController : ControllerBase
     private readonly UserManager<AppUser> _userManager;
     private readonly ILogger<MovieRatingsController> _logger;
     private readonly TMDbService _tmdbService;  // Add TMDbService
+    private readonly IMemoryCache _cache;
 
     // Modify constructor to inject TMDbService
     public MovieRatingsController(
-        MovieRecDbContext context,
-        UserManager<AppUser> userManager,
-        ILogger<MovieRatingsController> logger,
-        TMDbService tmdbService)  // Inject TMDbService
+     MovieRecDbContext context,
+     UserManager<AppUser> userManager,
+     ILogger<MovieRatingsController> logger,
+     TMDbService tmdbService,  // Inject TMDbService
+     IMemoryCache cache)  // Inject IMemoryCache
     {
         _context = context;
         _userManager = userManager;
         _logger = logger;
         _tmdbService = tmdbService;  // Store TMDbService
+        _cache = cache;  // Store IMemoryCache
     }
 
 
-[HttpPost("rate")]
+    [HttpPost("rate")]
     [Authorize]
     public async Task<IActionResult> RateMovie([FromBody] RateMovieDto model)
     {
@@ -93,6 +97,10 @@ public class MovieRatingsController : ControllerBase
             }
 
             await _context.SaveChangesAsync();
+            for (int count = 1; count <= 100; count++)
+            {
+                _cache.Remove($"recs_{userId}_{count}");
+            }
 
             return Ok(new
             {
@@ -309,6 +317,10 @@ public class MovieRatingsController : ControllerBase
 
             _context.MovieRatings.Remove(rating);
             await _context.SaveChangesAsync();
+            for (int count = 1; count <= 100; count++)
+            {
+                _cache.Remove($"recs_{userId}_{count}");
+            }
 
             _logger.LogInformation("Успешно изтрит рейтинг за филм {MovieId} от потребител {UserId}",
                 movieId, userId);

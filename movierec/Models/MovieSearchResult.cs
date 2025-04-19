@@ -1,7 +1,11 @@
-﻿namespace TMDb.Models
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+
+namespace movierec.Models
 {
     public class MovieSearchResult
     {
-        public List<Movie> Results { get; set; }
+        [JsonProperty("results")]
+        public List<Movie> Results { get; set; } = new List<Movie>();
     }
 }

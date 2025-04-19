@@ -16,13 +16,13 @@ namespace movierec.Models
         public virtual ICollection<WatchedMovie> WatchedMovies { get; set; } = new List<WatchedMovie>();
 
         // Допълнителна информация за потребителя
-        public string DisplayName { get; set; }
-        public string ProfilePictureUrl { get; set; }
+        public string? DisplayName { get; set; }
+        public string? ProfilePictureUrl { get; set; }
         public DateTime MemberSince { get; set; } = DateTime.UtcNow;
         public DateTime LastActive { get; set; } = DateTime.UtcNow;
 
         // Биография/описание
         [Column(TypeName = "text")]
-        public string Bio { get; set; }
+        public string? Bio { get; set; }
     }
 }

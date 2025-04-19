@@ -7,12 +7,17 @@ using movierec.Models;
 using System.Text.Json;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using MovieRecAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
+builder.Services.AddScoped<RecommendationService>();
+builder.Services.AddScoped<UserMovieService>();
+builder.Services.AddSingleton<RecommendationCacheService>();
+
 
 
 // Configure CORS

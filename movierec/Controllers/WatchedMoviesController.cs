@@ -5,10 +5,11 @@ using MovieRecAPI.Data;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore; // Това е най-важното
 using System.Linq;                  // За LINQ методите
-using TMDb.Models;
 using Newtonsoft.Json;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Caching.Memory; // За кеширане
+
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
@@ -17,12 +18,19 @@ public class WatchedMoviesController : ControllerBase
     private readonly MovieRecDbContext _context;
     private readonly ILogger<WatchedMoviesController> _logger;
     private readonly TMDbService _tmdbService;  // Declare TMDbService
+    private readonly IMemoryCache _cache;  // Declare IMemoryCache
 
-    public WatchedMoviesController(MovieRecDbContext context, ILogger<WatchedMoviesController> logger, TMDbService tmdbService)
+    // Инжектиране на IMemoryCache в конструктора
+    public WatchedMoviesController(
+        MovieRecDbContext context,
+        ILogger<WatchedMoviesController> logger,
+        TMDbService tmdbService,
+        IMemoryCache cache)  // Инжектиране на IMemoryCache
     {
         _context = context;
         _logger = logger;
         _tmdbService = tmdbService;  // Assign it in the constructor
+        _cache = cache;  // Assign IMemoryCache
     }
 
     [HttpPost]
@@ -83,7 +91,6 @@ public class WatchedMoviesController : ControllerBase
                 return Unauthorized(new { Success = false, Message = "User not authenticated" });
             }
 
-            // (1) Изтриваме проверката за кеш
             var watchedMovies = await _context.WatchedMovies
                 .AsNoTracking()
                 .Where(w => w.UserId == userId)
@@ -110,8 +117,8 @@ public class WatchedMoviesController : ControllerBase
                             Genres = tmdbData?.Genres?.Select(g => g.Name).Take(3).ToList() ?? new List<string> { "Unknown Genre" },
                             Cast = ProcessCastMembers(tmdbData?.Credits?.Cast),
                             ReleaseYear = !string.IsNullOrEmpty(tmdbData?.ReleaseDate)
-         ? ExtractReleaseYear(tmdbData.ReleaseDate)
-         : "Неизв.",
+                                ? ExtractReleaseYear(tmdbData.ReleaseDate)
+                                : "Неизв.",
                             WatchedOn = movie.WatchedOn.ToString("yyyy-MM-ddTHH:mm:ss")
                         };
 
@@ -133,7 +140,6 @@ public class WatchedMoviesController : ControllerBase
                 .OrderByDescending(m => ((dynamic)m).WatchedOn)
                 .ToList();
 
-            // (2) Изтриваме запазването в кеша
             return Ok(new { Success = true, Data = enrichedMovies });
         }
         catch (Exception ex)
@@ -147,6 +153,7 @@ public class WatchedMoviesController : ControllerBase
             });
         }
     }
+
 
     // Помощни методи
     private List<CastMemberDto> ProcessCastMembers(IEnumerable<CastMember> cast)
@@ -171,19 +178,16 @@ public class WatchedMoviesController : ControllerBase
             return "Неизв.";
         }
 
-        // Опит 1: Парсване като пълна дата (YYYY-MM-DD)
         if (DateTime.TryParse(releaseDate, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
         {
             return parsedDate.Year.ToString();
         }
 
-        // Опит 2: Проверка за вече извлечена година (YYYY)
         if (releaseDate.Length == 4 && int.TryParse(releaseDate, out _))
         {
             return releaseDate;
         }
 
-        // Опит 3: Извличане на първите 4 цифри
         var yearMatch = Regex.Match(releaseDate, @"\d{4}");
         if (yearMatch.Success)
         {
@@ -200,10 +204,6 @@ public class WatchedMoviesController : ControllerBase
         public string Name { get; set; }
         public string Character { get; set; }
     }
-
-
-
-
 
     [HttpDelete("{tmdbMovieId}")]
     public async Task<IActionResult> RemoveFromWatched(int tmdbMovieId)

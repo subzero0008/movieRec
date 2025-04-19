@@ -204,6 +204,43 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "movierec.Controllers.RecommendationsController",
+    "Method": "GetRecommendationsForUser",
+    "RelativePath": "api/Recommendations/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "count",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "movierec.Controllers.RecommendationsController",
+    "Method": "GetRecommendations",
+    "RelativePath": "api/Recommendations/recommendations",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "count",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "WatchedMoviesController",
     "Method": "AddToWatched",
     "RelativePath": "api/WatchedMovies",

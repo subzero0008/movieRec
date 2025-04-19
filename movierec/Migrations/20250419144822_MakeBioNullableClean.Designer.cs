@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieRecAPI.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace movierec.Migrations
 {
     [DbContext(typeof(MovieRecDbContext))]
-    partial class MovieRecDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250419144822_MakeBioNullableClean")]
+    partial class MakeBioNullableClean
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -228,6 +231,7 @@ namespace movierec.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("DisplayName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -267,6 +271,7 @@ namespace movierec.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("ProfilePictureUrl")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
