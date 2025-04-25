@@ -43,9 +43,12 @@ namespace movierec.Models
         [JsonProperty("vote_count")]
         public int VoteCount { get; set; }
 
-        // Основна информация за жанрове (само ID и имена)
+        // Двете свойства за жанрове:
         [JsonProperty("genres")]
         public List<GenreInfo> GenreInfo { get; set; } = new List<GenreInfo>();
+
+        [JsonProperty("genre_ids")]
+        public List<int> GenreIds { get; set; } = new List<int>();
 
         // Оптимизирана информация за актьорите
         [JsonProperty("main_cast")]

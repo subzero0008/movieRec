@@ -1,7 +1,6 @@
 ﻿    using Microsoft.Extensions.Caching.Memory;
     using movierec.Models;
-    using Newtonsoft.Json;
-
+using Newtonsoft.Json;
 public class TMDbService
 {
 
@@ -82,41 +81,118 @@ public class TMDbService
         });
 
     }
-    public async Task<MovieCollection> GetCollectionInfoAsync(int movieId, string language = "en-US")
+    public async Task<MovieSearchResult> DiscoverMoviesAdvancedAsync(DiscoverParams parameters)
     {
-        var cacheKey = $"movie-collection-{movieId}-{language}";
-
-        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        try
         {
-            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24);
+            var baseUrl = "discover/movie";
+            var queryParams = parameters.ToApiQueryParams();
 
-            try
+            // Добавяне на жанрове според повода
+            if (!string.IsNullOrEmpty(parameters.Occasion))
             {
-                // Първо взимаме детайлите на филма за да намерим ID на колекцията
-                var movieDetails = await GetMovieDetailsWithCreditsAsync(movieId, language);
-                if (movieDetails?.BelongsToCollection == null)
+                queryParams["with_genres"] = parameters.Occasion switch
                 {
-                    return new MovieCollection();
-                }
-
-                // След това взимаме самата колекция
-                var url = $"collection/{movieDetails.BelongsToCollection.Id}?api_key={_apiKey}&language={language}";
-                var response = await _httpClient.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-
-                var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<MovieCollection>(content) ?? new MovieCollection();
+                    "Family Time" => AddGenreToParams(queryParams, "10751"), // Family
+                    "Date Night" => AddGenreToParams(queryParams, "10749"), // Romance
+                    _ => queryParams.ContainsKey("with_genres")
+                        ? queryParams["with_genres"]
+                        : null
+                };
             }
-            catch (Exception ex)
+
+            // Добавяне на теми (ключови думи)
+            if (parameters.Themes?.Count > 0)
             {
-                _logger.LogError(ex, $"Error getting collection for movie ID {movieId}");
-                return new MovieCollection();
+                var themeKeywords = await GetKeywordIdsByThemes(parameters.Themes);
+                if (!string.IsNullOrEmpty(themeKeywords))
+                {
+                    queryParams["with_keywords"] = themeKeywords;
+                }
             }
-        });
+
+            // Добавяне на филтър за рейтинг
+            if (parameters.IsRatingImportant)
+            {
+                queryParams["vote_average.gte"] = "7.0";
+            }
+
+            // Добавяне на филтър за години (ако не е Classic Cinema)
+            if (!string.IsNullOrEmpty(parameters.AgePreference) &&
+                parameters.AgePreference != "Doesn't matter" &&
+                !(parameters.Themes?.Contains("Classic Cinema") == true))
+            {
+                queryParams["primary_release_date.gte"] = GetStartDate(parameters.AgePreference);
+            }
+
+            // Построяване на URL
+            var url = $"{baseUrl}?api_key={_apiKey}";
+            foreach (var param in queryParams)
+            {
+                if (!string.IsNullOrEmpty(param.Value))
+                    url += $"&{param.Key}={param.Value}";
+            }
+
+            _logger.LogInformation($"TMDb API Request: {url}");
+
+            // Изпращане на заявката
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<MovieSearchResult>(content)
+                   ?? new MovieSearchResult { Results = new List<Movie>() };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to discover movies");
+            return new MovieSearchResult { Results = new List<Movie>() };
+        }
     }
 
-    // Останалите съществуващи методи остават непроменени
-   
+    private string AddGenreToParams(Dictionary<string, string> queryParams, string genreId)
+    {
+        if (queryParams.ContainsKey("with_genres"))
+        {
+            var currentGenres = queryParams["with_genres"];
+            return currentGenres.Split(',').Contains(genreId)
+                ? currentGenres
+                : $"{currentGenres},{genreId}";
+        }
+        return genreId;
+    }
+
+    private string GetStartDate(string agePreference)
+    {
+        return agePreference switch
+        {
+            "Last 5 years" => DateTime.Now.AddYears(-5).ToString("yyyy-MM-dd"),
+            "Last 10 years" => DateTime.Now.AddYears(-10).ToString("yyyy-MM-dd"),
+            "Last 25 years" => DateTime.Now.AddYears(-25).ToString("yyyy-MM-dd"),
+            _ => null
+        };
+    }
+
+    public async Task<string> GetKeywordIdsByThemes(List<string> themes)
+    {
+        var themeToKeywordId = new Dictionary<string, string>
+        {
+            ["Based on Book"] = "818",
+            ["Oscar Winners"] = "1928",
+            ["Classic Cinema"] = "2796",
+            ["Spy Movies"] = "9800",
+            ["Superhero Movies"] = "1803",
+            ["Time Travel"] = "2224",
+            ["Zombie Apocalypse"] = "12249"
+        };
+
+        var validKeywords = themes
+            .Where(themeToKeywordId.ContainsKey)
+            .Select(t => themeToKeywordId[t]);
+
+        return string.Join(",", validKeywords);
+    }
+
     public async Task<MovieSearchResult> GetPopularMoviesAsync(string language = "en-US")
     {
         var cacheKey = $"popular-movies-{language}";
@@ -237,7 +313,7 @@ public class TMDbService
         });
     }
 
-    private async Task<List<int>> GetGenreIds(List<string> genreNames)
+    public async Task<List<int>> GetGenreIds(List<string> genreNames)
     {
         var allGenres = await GetMovieGenresAsync();
         return allGenres
@@ -317,13 +393,18 @@ public class TMDbService
         return movie;
     }
     public async Task<MovieSearchResult> DiscoverMoviesAsync(
-    string? genres = null,
-    int? actorId = null,
-    int? directorId = null,
-    string language = "en-US",
-    int page = 1)
+        string? genres = null,
+        string? withKeywords = null,
+        int? primaryReleaseYear = null,
+        string? sortBy = "popularity.desc",
+        int? page = 1,
+        int? pageSize = null,
+        int? actorId = null,
+        int? directorId = null,
+        string language = "en-US",
+        double? minVoteAverage = null)
     {
-        var cacheKey = $"discover-movies-{genres}-{actorId}-{directorId}-{language}-{page}";
+        var cacheKey = $"discover-movies-{genres}-{withKeywords}-{primaryReleaseYear}-{sortBy}-{page}-{pageSize}";
 
         return await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
@@ -331,21 +412,31 @@ public class TMDbService
 
             try
             {
-                var url = $"discover/movie?api_key={_apiKey}&language={language}&page={page}&sort_by=popularity.desc";
+                var url = $"discover/movie?api_key={_apiKey}&language={language}";
 
-                // Add optional parameters
+                // Add pagination parameters
+                if (page.HasValue) url += $"&page={page.Value}";
+                if (pageSize.HasValue) url += $"&page_size={pageSize.Value}";
+
+                // Add sorting
+                if (!string.IsNullOrEmpty(sortBy))
+                    url += $"&sort_by={sortBy}";
+
+                // Add filters
                 if (!string.IsNullOrEmpty(genres))
-                {
                     url += $"&with_genres={genres}";
-                }
+
+                if (!string.IsNullOrEmpty(withKeywords))
+                    url += $"&with_keywords={withKeywords}";
+
+                if (primaryReleaseYear.HasValue)
+                    url += $"&primary_release_year={primaryReleaseYear.Value}";
+
                 if (actorId.HasValue)
-                {
                     url += $"&with_cast={actorId.Value}";
-                }
+
                 if (directorId.HasValue)
-                {
                     url += $"&with_crew={directorId.Value}";
-                }
 
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
@@ -358,12 +449,15 @@ public class TMDbService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error discovering movies with genres: {genres}, actor: {actorId}, director: {directorId}");
+                _logger.LogError(ex, "Error in DiscoverMoviesAsync");
                 return new MovieSearchResult { Results = new List<Movie>() };
             }
         });
     }
-   
+
+    // Helper method to process movie results
+
+
 
     public async Task<PersonSearchResult> SearchPersonAsync(string name)
     {
@@ -390,6 +484,300 @@ public class TMDbService
         });
     }
 
+    public async Task<TrendingTVShowsResponse> GetTrendingTVShowsAsync(string language = "en-US")
+    {
+        var cacheKey = $"trending-tv-{language}";
+
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+
+            try
+            {
+                var url = $"trending/tv/day?api_key={_apiKey}&language={language}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<TrendingTVShowsResponse>(content);
+
+                ProcessTVShowResults(result?.Results);
+                return result ?? new TrendingTVShowsResponse { Results = new List<TVShow>() };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting trending TV shows");
+                return new TrendingTVShowsResponse { Results = new List<TVShow>() };
+            }
+        });
+    }
+
+    public async Task<TVShowDetails> GetTVShowDetailsAsync(int id, string language = "en-US")
+    {
+        var cacheKey = $"tvshow-details-{id}-{language}";
+
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
+
+            try
+            {
+                var url = $"tv/{id}?api_key={_apiKey}&language={language}&append_to_response=credits,keywords";
+                var response = await _httpClient.GetAsync(url);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return CreateDefaultTVShowDetails(id);
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<TVShowDetails>(content);
+
+                return NormalizeTVShowDetails(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting TV show details for ID {id}");
+                return CreateDefaultTVShowDetails(id);
+            }
+        });
+    }
+
+    public async Task<TVShowSearchResult> SearchTVShowsAsync(string query, string language = "en-US")
+    {
+        var cacheKey = $"tvshow-search-{query}-{language}";
+
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2);
+
+            try
+            {
+                var url = $"search/tv?api_key={_apiKey}&language={language}&query={Uri.EscapeDataString(query)}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<TVShowSearchResult>(content);
+
+                ProcessTVShowResults(result?.Results);
+                return result ?? new TVShowSearchResult { Results = new List<TVShow>() };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error searching TV shows for query: {query}");
+                return new TVShowSearchResult { Results = new List<TVShow>() };
+            }
+        });
+    }
+
+    public async Task<SimilarTVShowsResult> GetSimilarTVShowsAsync(int tvShowId, string language = "en-US")
+    {
+        var cacheKey = $"similar-tvshows-{tvShowId}-{language}";
+
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12);
+
+            try
+            {
+                var url = $"tv/{tvShowId}/similar?api_key={_apiKey}&language={language}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<SimilarTVShowsResult>(content);
+
+                ProcessTVShowResults(result?.Results);
+                return result ?? new SimilarTVShowsResult { Results = new List<TVShow>() };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting similar TV shows for ID {tvShowId}");
+                return new SimilarTVShowsResult { Results = new List<TVShow>() };
+            }
+        });
+    }
+
+
+    private void ProcessTVShowResults(List<TVShow> tvShows)
+    {
+        if (tvShows == null) return;
+
+        foreach (var tvShow in tvShows)
+        {
+            if (tvShow is TVShowDetails details)
+            {
+                NormalizeTVShowDetails(details);
+            }
+            else
+            {
+                tvShow.Name ??= "Unknown TV Show";
+                tvShow.Overview ??= "No overview available";
+                tvShow.PosterPath ??= string.Empty;
+            }
+        }
+    }
+
+    private TVShowDetails NormalizeTVShowDetails(TVShowDetails tvShow)
+    {
+        if (tvShow == null) return CreateDefaultTVShowDetails(0);
+
+        tvShow.Genres ??= new List<Genre> { new Genre { Name = "Drama" } };
+
+        if (tvShow.Credits == null)
+        {
+            tvShow.Credits = new Credits
+            {
+                Cast = { new CastMember { Name = "Unknown Actor" } },
+                Crew = { new CrewMember { Name = "Unknown Director", Job = "Director" } }
+            };
+        }
+
+        return tvShow;
+    }
+
+    private TVShowDetails CreateDefaultTVShowDetails(int id)
+    {
+        return new TVShowDetails
+        {
+            Id = id,
+            Name = "Unknown TV Show",
+            Overview = "No overview available",
+            PosterPath = string.Empty,
+            FirstAirDate = "1900-01-01",
+            VoteAverage = 0,
+            OriginalName = "Unknown TV Show",
+            OriginalLanguage = "en",
+            Popularity = 0,
+            VoteCount = 0,
+            Genres = new List<Genre>(),
+            Credits = new Credits
+            {
+                Cast = new List<CastMember>(),
+                Crew = new List<CrewMember>()
+            }
+        };
+    }
+
+    // ========== RESPONSE CLASSES FOR TV SHOWS ==========
+
+    public class TrendingTVShowsResponse
+    {
+        [JsonProperty("results")]
+        public List<TVShow> Results { get; set; } = new List<TVShow>();
+    }
+
+    public class TVShowSearchResult
+    {
+        [JsonProperty("results")]
+        public List<TVShow> Results { get; set; } = new List<TVShow>();
+    }
+
+    public class SimilarTVShowsResult
+    {
+        [JsonProperty("results")]
+        public List<TVShow> Results { get; set; } = new List<TVShow>();
+    }
+
+    public class TVShow
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("overview")]
+        public string Overview { get; set; }
+
+        [JsonProperty("poster_path")]
+        public string PosterPath { get; set; }
+
+        [JsonProperty("vote_average")]
+        public double VoteAverage { get; set; }
+
+        [JsonProperty("first_air_date")]
+        public string FirstAirDate { get; set; }
+
+        [JsonProperty("original_name")]
+        public string OriginalName { get; set; }
+
+        [JsonProperty("original_language")]
+        public string OriginalLanguage { get; set; }
+
+        [JsonProperty("popularity")]
+        public double Popularity { get; set; }
+
+        [JsonProperty("vote_count")]
+        public int VoteCount { get; set; }
+
+        [JsonProperty("genre_ids")]
+        public List<int> GenreIds { get; set; } = new List<int>();
+    }
+
+    public class TVShowDetails : TVShow
+    {
+        [JsonProperty("genres")]
+        public List<Genre> Genres { get; set; } = new List<Genre>();
+
+        [JsonProperty("credits")]
+        public Credits Credits { get; set; } = new Credits();
+
+        [JsonProperty("seasons")]
+        public List<Season> Seasons { get; set; } = new List<Season>();
+    }
+
+    public class Season
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("overview")]
+        public string Overview { get; set; }
+
+        [JsonProperty("poster_path")]
+        public string PosterPath { get; set; }
+
+        [JsonProperty("season_number")]
+        public int SeasonNumber { get; set; }
+
+        [JsonProperty("air_date")]
+        public string AirDate { get; set; }
+
+        [JsonProperty("episode_count")]
+        public int EpisodeCount { get; set; }
+    }
+    public async Task<List<Genre>> GetTVShowGenresAsync()
+    {
+        var cacheKey = "tvshow-genres";
+
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24);
+
+            try
+            {
+                var url = $"genre/tv/list?api_key={_apiKey}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<GenreListResponse>(content);
+
+                return result?.Genres ?? new List<Genre>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting TV show genres");
+                return new List<Genre>();
+            }
+        });
+    }
+
     private MovieDetails CreateDefaultMovieDetails(int id)
     {
         return new MovieDetails
@@ -409,6 +797,17 @@ public class TMDbService
             MainCrew = new List<CrewInfo>()
         };
     }
+
+    internal async Task<List<Movie>?> DiscoverMoviesAsync(DiscoverParams discoverParams)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal async Task<List<Movie>?> DiscoverMoviesAsync(string genres, string withKeywords, string sortBy, double? voteAverageGte, string? primaryReleaseDateGte, string language, int page)
+    {
+        throw new NotImplementedException();
+    }
+
     public class MovieCollection
     {
         [JsonProperty("id")]

@@ -21,11 +21,15 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    if (userData.token) {  // Проверка дали има токен в userData
+    if (userData.token) {
+      // Запазваме токена отделно за по-лесен достъп
+      localStorage.setItem('authToken', userData.token); 
+      // Запазваме целият user обект
       localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
     } else {
-      console.error("No token in user data");  // Ако няма токен, показваме съобщение за грешка
+      console.error("No token in user data");
+      throw new Error("Login failed: No token received");
     }
   };
 

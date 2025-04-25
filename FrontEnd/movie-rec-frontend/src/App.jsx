@@ -8,7 +8,10 @@ import { useAuth } from './AuthContext';
 import Profile from './Profile';
 import WatchedMoviesList from './components/WatchedMoviesList';
 import Navbar from './components/Navbar';
-import SearchResults from './components/SearchResults'; // Добавен новия компонент
+import SearchResults from './components/SearchResults';
+import Recommendations from './components/Recommendations';
+import TvShowsList from './components/TvShowsList';
+import TvShowDetails from './components/TvShowDetails';
 
 function App() {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -103,7 +106,6 @@ function App() {
               <h1 className="text-4xl font-bold text-white text-center mb-12">
                 {isSearching ? 'Search Results' : 'Trending Movies'}
               </h1>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {moviesToDisplay.length > 0 ? (
                   moviesToDisplay.map((movie) => (
@@ -131,7 +133,12 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
         <Route path="/watched" element={user ? <WatchedMoviesList /> : <Navigate to="/login" />} />
-        <Route path="/search-results" element={<SearchResults />} /> {/* Добавен нов маршрут */}
+        <Route path="/search-results" element={<SearchResults />} />
+        <Route path="/recommendations" element={user ? <Recommendations /> : <Navigate to="/login" />} />
+        
+        {/* Добавени маршрути за TV shows */}
+        <Route path="/tv" element={<TvShowsList />} />
+        <Route path="/tv/:id" element={<TvShowDetails />} />
       </Routes>
     </div>
   );

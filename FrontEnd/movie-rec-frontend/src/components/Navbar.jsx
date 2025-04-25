@@ -72,56 +72,71 @@ export default function Navbar() {
 
   return (
     <nav className="bg-gradient-to-r from-gray-900 to-blue-900 text-white shadow-xl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo and main navigation */}
-          <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-yellow-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-between h-16">
+        {/* Logo and main navigation */}
+        <div className="flex items-center">
+          <Link to="/" className="flex-shrink-0 flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-yellow-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+              />
+            </svg>
+            <span className="ml-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-200">
+              FilmSense
+            </span>
+          </Link>
+  
+          {/* Desktop Navigation */}
+          <div className="hidden md:block ml-10">
+            <div className="flex items-baseline space-x-4">
+              <Link
+                to="/"
+                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
-                />
-              </svg>
-              <span className="ml-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-200">
-                FilmSense
-              </span>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:block ml-10">
-              <div className="flex items-baseline space-x-4">
-                <Link
-                  to="/"
-                  className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300"
-                >
-                  Начало
-                </Link>
-                <Link
-                  to="/movies"
-                  className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300"
-                >
-                  Филми
-                </Link>
-                {user && (
-                  <Link
-                    to="/watchlist"
-                    className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300"
-                  >
-                    Списък
+                Начало
+              </Link>
+              <Link
+                to="/movies"
+                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300"
+              >
+    Филми
+    </Link>
+    {user && (
+      <>
+        <Link
+          to="/tv"
+          className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300"
+        >
+          TV Shows
+        </Link>
+        <Link
+          to="/recommendations"
+          className="px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-500 text-white transition duration-300"
+          title={user.ratedMoviesCount < 10 ? "Трябва да оцените поне 10 филма за препоръки" : ""}
+        >
+                    Топ 20 Предложения
+                    {user.ratedMoviesCount >= 10 && (
+                      <span className="ml-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-yellow-100 bg-yellow-700 rounded-full">
+                        New
+                      </span>
+                    )}
                   </Link>
-                )}
-              </div>
+                </>
+              )}
             </div>
           </div>
+        </div>
+
 
           {/* Search Bar - Desktop */}
           <div className="hidden md:block mx-4 flex-1 max-w-md">

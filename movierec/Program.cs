@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using MovieRecAPI.Services;
+using MovieRec.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +49,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<MovieRecDbContext>()
 .AddDefaultTokenProviders();
 
-// Configure Authentication (JWT + Cookies)
+builder.Services.AddScoped<SurveyService>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
