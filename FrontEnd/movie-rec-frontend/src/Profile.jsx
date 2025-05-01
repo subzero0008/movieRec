@@ -29,7 +29,7 @@ const Profile = () => {
   
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115/api'}/movieratings/user/${user.id}?page=1&pageSize=10`, 
+          `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115/api'}/movieratings/user/${user.id}?page=1&pageSize=20`, 
           {
             headers: {
               'Authorization': `Bearer ${user.token}`,

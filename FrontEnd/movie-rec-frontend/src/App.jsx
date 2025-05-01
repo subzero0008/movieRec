@@ -12,6 +12,13 @@ import SearchResults from './components/SearchResults';
 import Recommendations from './components/Recommendations';
 import TvShowsList from './components/TvShowsList';
 import TvShowDetails from './components/TvShowDetails';
+import Survey from './components/Survey';
+import SurveyResults from './components/SurveyResults';
+import MoviesList from './components/MoviesList';
+import { MoviesService } from './services/MoviesService';
+
+
+
 
 function App() {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -49,31 +56,33 @@ function App() {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-
+  
     if (!searchQuery.trim()) {
       setIsSearching(false);
       return;
     }
-
+  
     setLoading(true);
     setError(null);
     setIsSearching(true);
-
+  
     try {
-      const response = await fetch(`${API_URL}/movies/search?query=${searchQuery}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      setSearchResults(data || []);
+      const results = await MoviesService.searchMovies(searchQuery);
+      setSearchResults(results.movies);
+      // Пренасочване към search страницата с резултатите
+      navigate('/search-results', { 
+        state: { 
+          movies: results.movies, 
+          query: searchQuery 
+        } 
+      });
     } catch (error) {
       console.error('Error searching movies:', error);
-      setError('Failed to search movies. Please try again later.');
+      setError(error.message || 'Failed to search movies');
     } finally {
       setLoading(false);
     }
   };
-
   const handleLogout = () => {
     logout();
   };
@@ -135,10 +144,20 @@ function App() {
         <Route path="/watched" element={user ? <WatchedMoviesList /> : <Navigate to="/login" />} />
         <Route path="/search-results" element={<SearchResults />} />
         <Route path="/recommendations" element={user ? <Recommendations /> : <Navigate to="/login" />} />
+        <Route path="/movies" element={<MoviesList />} />
+
         
         {/* Добавени маршрути за TV shows */}
         <Route path="/tv" element={<TvShowsList />} />
         <Route path="/tv/:id" element={<TvShowDetails />} />
+        <Route 
+  path="/survey" 
+  element={user ? <Survey /> : <Navigate to="/login" />} 
+/>
+<Route 
+  path="/survey-results" 
+  element={user ? <SurveyResults /> : <Navigate to="/login" />} 
+/>
       </Routes>
     </div>
   );

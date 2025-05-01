@@ -97,15 +97,10 @@ namespace MovieRec.Controllers
             Text = "Select any special categories you're interested in",
             Options = new[] {
                 "Based on Book",
-                "Oscar Winners",
-                "IMDb Top 250",
-                "Classic Cinema",
-                "Cult Films",
-                "Independent Films",
-                "Spy Movies",
-                "Superhero Movies",
-                "Time Travel",
-                "Zombie Apocalypse"
+                 "Classic Cinema",
+                "True Story",
+               "Biographical",
+               "Superhero Movies"
             },
             FilterProperty = "themes",
             IsMultipleChoice = true

@@ -124,20 +124,73 @@ public class TVShowsController : ControllerBase
     /// <summary>
     /// Gets TV show genres
     /// </summary>
+    /// <param name="language">Language (default: en-US)</param>
+    /// <summary>
+    /// Gets TV show genres
+    /// </summary>
+    /// <param name="language">Language (default: en-US)</param>
     [HttpGet("genres")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetGenres()
+    public async Task<IActionResult> GetGenres([FromQuery] string language = "en-US")
     {
         try
         {
-            var result = await _tmdbService.GetTVShowGenresAsync();
+            var result = await _tmdbService.GetTVShowGenresAsync(language);
             return Ok(result);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting TV show genres");
             return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
+    /// <summary>
+    /// Gets TV shows by genre ID
+    /// </summary>
+    /// <param name="genreId">Genre ID</param>
+    /// <param name="language">Language (default: en-US)</param>
+    /// <param name="page">Page number (default: 1)</param>
+    [HttpGet("genre/{genreId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetByGenre(int genreId, [FromQuery] string language = "en-US", [FromQuery] int page = 1)
+    {
+        try
+        {
+            var result = await _tmdbService.GetTVShowsByGenreAsync(genreId, language, page);
+
+            if (result == null || result.Results == null || !result.Results.Any())
+            {
+                return NotFound(new
+                {
+                    message = "No TV shows found for this genre",
+                    page,
+                    totalPages = result?.TotalPages ?? 0,
+                    totalResults = result?.TotalResults ?? 0
+                });
+            }
+
+            return Ok(new
+            {
+                page = result.Page,
+                results = result.Results,
+                totalPages = result.TotalPages,
+                totalResults = result.TotalResults
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error getting TV shows for genre ID {genreId}");
+            return StatusCode(500, new
+            {
+                message = "Internal server error",
+                page,
+                totalPages = 0,
+                totalResults = 0
+            });
         }
     }
 }

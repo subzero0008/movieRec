@@ -1,6 +1,7 @@
 ﻿    using Microsoft.Extensions.Caching.Memory;
     using movierec.Models;
 using Newtonsoft.Json;
+using YourNamespace.Models;
 public class TMDbService
 {
 
@@ -402,7 +403,8 @@ public class TMDbService
         int? actorId = null,
         int? directorId = null,
         string language = "en-US",
-        double? minVoteAverage = null)
+        double? minVoteAverage = null,
+        int? minVoteCount = null)
     {
         var cacheKey = $"discover-movies-{genres}-{withKeywords}-{primaryReleaseYear}-{sortBy}-{page}-{pageSize}";
 
@@ -751,9 +753,10 @@ public class TMDbService
         [JsonProperty("episode_count")]
         public int EpisodeCount { get; set; }
     }
-    public async Task<List<Genre>> GetTVShowGenresAsync()
+
+    public async Task<List<Genre>> GetTVShowGenresAsync(string language = "en-US")
     {
-        var cacheKey = "tvshow-genres";
+        var cacheKey = $"tvshow-genres-{language}";
 
         return await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
@@ -761,7 +764,7 @@ public class TMDbService
 
             try
             {
-                var url = $"genre/tv/list?api_key={_apiKey}";
+                var url = $"genre/tv/list?api_key={_apiKey}&language={language}";
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
@@ -772,12 +775,82 @@ public class TMDbService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting TV show genres");
+                _logger.LogError(ex, $"Error getting TV show genres for language: {language}");
                 return new List<Genre>();
             }
         });
     }
+    public async Task<PaginatedResponse<Movie>> GetMoviesByGenreAsync(int genreId, string language = "en-US", int page = 1)
+    {
+        var cacheKey = $"movies-by-genre-{genreId}-{language}-{page}";
 
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
+
+            try
+            {
+                var url = $"discover/movie?api_key={_apiKey}&with_genres={genreId}&language={language}&page={page}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PaginatedResponse<Movie>>(content);
+
+                ProcessMovieResults(result?.Results);
+                return result ?? new PaginatedResponse<Movie> { Results = new List<Movie>() };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting movies for genre ID {genreId}");
+                return new PaginatedResponse<Movie> { Results = new List<Movie>() };
+            }
+        });
+    }
+    public async Task<PaginatedResponse<TVShow>> GetTVShowsByGenreAsync(int genreId, string language = "en-US", int page = 1)
+    {
+        var cacheKey = $"tvshows-by-genre-{genreId}-{language}-{page}";
+
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
+
+            try
+            {
+                var url = $"discover/tv?api_key={_apiKey}&with_genres={genreId}&language={language}&page={page}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PaginatedResponse<TVShow>>(content);
+
+                // Проверка за нулев резултат
+                if (result == null)
+                {
+                    return new PaginatedResponse<TVShow>
+                    {
+                        Page = page,
+                        Results = new List<TVShow>(),
+                        TotalPages = 0,
+                        TotalResults = 0
+                    };
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting TV shows for genre ID {genreId}");
+                return new PaginatedResponse<TVShow>
+                {
+                    Page = page,
+                    Results = new List<TVShow>(),
+                    TotalPages = 0,
+                    TotalResults = 0
+                };
+            }
+        });
+    }
     private MovieDetails CreateDefaultMovieDetails(int id)
     {
         return new MovieDetails

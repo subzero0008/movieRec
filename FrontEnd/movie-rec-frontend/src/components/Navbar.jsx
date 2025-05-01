@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import axios from 'axios';
+import { MoviesService } from '../services/MoviesService';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -49,15 +50,13 @@ export default function Navbar() {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-
+  
     setIsSearching(true);
     try {
-      const response = await axios.get(
-        `https://localhost:7115/api/movies/search?query=${encodeURIComponent(searchQuery)}`
-      );
+      const results = await MoviesService.searchMovies(searchQuery);
       navigate('/search-results', { 
         state: { 
-          movies: response.data, 
+          movies: results.movies, 
           query: searchQuery 
         } 
       });
@@ -65,11 +64,11 @@ export default function Navbar() {
       setIsMobileMenuOpen(false);
     } catch (error) {
       console.error('Error searching for movies', error);
+      // Можете да добавите toast notification тук
     } finally {
       setIsSearching(false);
     }
   };
-
   return (
     <nav className="bg-gradient-to-r from-gray-900 to-blue-900 text-white shadow-xl">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -114,24 +113,38 @@ export default function Navbar() {
     {user && (
       <>
         <Link
-          to="/tv"
-          className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300"
-        >
-          TV Shows
+                      to="/tv"
+                      className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-blue-700"
+                    >
+          TV Series
         </Link>
         <Link
           to="/recommendations"
           className="px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-500 text-white transition duration-300"
           title={user.ratedMoviesCount < 10 ? "Трябва да оцените поне 10 филма за препоръки" : ""}
         >
-                    Топ 20 Предложения
+                    Топ 10 Предложения
                     {user.ratedMoviesCount >= 10 && (
                       <span className="ml-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-yellow-100 bg-yellow-700 rounded-full">
                         New
                       </span>
                     )}
                   </Link>
-                </>
+                  <Link
+      to="/survey"
+      className="px-3 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transition-all duration-300 shadow-md hover:shadow-lg"
+    >
+      <div className="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        Анкета
+        <span className="ml-1.5 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-green-100 bg-green-700 rounded-full animate-pulse">
+          NEW
+        </span>
+      </div>
+    </Link>
+  </>
               )}
             </div>
           </div>

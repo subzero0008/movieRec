@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using movierec.Services;
 
 namespace MovieRec.Services
 {
@@ -18,13 +17,11 @@ namespace MovieRec.Services
         private readonly ILogger<SurveyService> _logger;
         private static readonly Dictionary<string, int> _themeKeywordIds = new()
         {
-            ["Based on Book"] = 818,
-            ["Oscar Winners"] = 1928,
-            ["Classic Cinema"] = 2796,
-            ["Spy Movies"] = 9800,
-            ["Superhero Movies"] = 1803,
-            ["Time Travel"] = 2224,
-            ["Zombie Apocalypse"] = 12249
+            ["Based on Book"] = 818,         // Потвърдено: Филми по книги
+            ["Classic Cinema"] = 2796,       // Потвърдено: Класически филми (преди 1970)
+            ["True Story"] = 971,            // Потвърдено: Вдъхновени от истински събития
+            ["Biographical"] = 968,          // Потвърдено: Биографични филми
+            ["Superhero Movies"] = 1803      // Потвърдено: Супергеройски филми (Marvel/DC)
         };
 
         private static readonly Dictionary<int, string> _genreMappings = new()
@@ -112,12 +109,14 @@ namespace MovieRec.Services
             var keywordsParam = GetThemeKeywords(request.Themes);
             var sortBy = GetSortByCriteria(request);
             var minVoteAverage = request.IsRatingImportant ? 7.0 : (double?)null;
+            // Add minimum vote count (e.g., 1000 votes)
+            var minVoteCount = request.IsRatingImportant ? 1000 : (int?)null;
             var primaryReleaseYear = (request.AgePreference != "Doesn't matter" &&
                                    !(request.Themes?.Contains("Classic Cinema") == true))
                                   ? GetReleaseYear(request.AgePreference)
                                   : (int?)null;
 
-            _logger.LogDebug($"TMDb query params: genres={genresParam}, keywords={keywordsParam}, sort={sortBy}, minVote={minVoteAverage}, releaseYear={primaryReleaseYear}");
+            _logger.LogDebug($"TMDb query params: genres={genresParam}, keywords={keywordsParam}, sort={sortBy}, minVote={minVoteAverage}, minVotes={minVoteCount}, releaseYear={primaryReleaseYear}");
 
             // Get movies from TMDb
             var movieResult = await _tmdbService.DiscoverMoviesAsync(
@@ -126,6 +125,7 @@ namespace MovieRec.Services
                 primaryReleaseYear: primaryReleaseYear,
                 sortBy: sortBy,
                 minVoteAverage: minVoteAverage,
+                minVoteCount: minVoteCount,  // Add this parameter
                 language: "en-US",
                 page: 1
             );
@@ -317,7 +317,8 @@ namespace MovieRec.Services
         private string GetSortByCriteria(SurveyRequest request)
         {
             if (request.IsRatingImportant)
-                return "vote_average.desc";
+                // Sort by a combination of vote average and vote count
+                return "vote_average.desc,vote_count.desc";
 
             if (request.Occasion == "Party" || request.Occasion == "Watching with Friends")
                 return "popularity.desc";
@@ -363,7 +364,7 @@ namespace MovieRec.Services
                 }
 
                 if (request.IsRatingImportant)
-                    reasons.Add($"high rating ({movie.VoteAverage:0.0}/10)");
+                    reasons.Add($"high rating ({movie.VoteAverage:0.0}/10 from {movie.VoteCount} votes)");
 
                 if (request.Themes?.Any() == true)
                     reasons.Add($"matches themes: {string.Join(", ", request.Themes)}");

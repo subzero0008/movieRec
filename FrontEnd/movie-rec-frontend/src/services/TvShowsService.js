@@ -8,62 +8,128 @@ const instance = axios.create({
 });
 
 export const TvShowsService = {
-  async getTrending() {
+  async getTrending(language = 'en-US', page = 1) {
     try {
-      const response = await instance.get('/api/tv/trending');
-      return response.data; // Директно връщаме масива с TV shows
+      const response = await instance.get('/api/tv/trending', {
+        params: { language, page }
+      });
+      return {
+        shows: response.data.results || response.data,
+        page: response.data.page || 1,
+        totalPages: response.data.total_pages || 1,
+        totalResults: response.data.total_results || (response.data.results ? response.data.results.length : 0)
+      };
     } catch (error) {
       console.error('Error fetching trending TV shows:', error);
       throw error;
     }
   },
 
-  async getPopular() {
+  async getPopular(language = 'en-US', page = 1) {
     try {
-      const response = await instance.get('/api/tv/popular');
-      return response.data;
+      const response = await instance.get('/api/tv/popular', {
+        params: { language, page }
+      });
+      return {
+        shows: response.data.results || response.data,
+        page: response.data.page || 1,
+        totalPages: response.data.total_pages || 1,
+        totalResults: response.data.total_results || (response.data.results ? response.data.results.length : 0)
+      };
     } catch (error) {
       console.error('Error fetching popular TV shows:', error);
       throw error;
     }
   },
 
-  async getTopRated() {
+  async getTopRated(language = 'en-US', page = 1) {
     try {
-      const response = await instance.get('/api/tv/top-rated');
-      return response.data;
+      const response = await instance.get('/api/tv/top-rated', {
+        params: { language, page }
+      });
+      return {
+        shows: response.data.results || response.data,
+        page: response.data.page || 1,
+        totalPages: response.data.total_pages || 1,
+        totalResults: response.data.total_results || (response.data.results ? response.data.results.length : 0)
+      };
     } catch (error) {
       console.error('Error fetching top rated TV shows:', error);
       throw error;
     }
   },
-  async getDetails(id) {
+
+  async getDetails(id, language = 'en-US') {
     try {
-      const response = await instance.get(`/api/tv/${id}`);
+      const response = await instance.get(`/api/tv/${id}`, {
+        params: { language }
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching TV show details:', error);
       throw error;
     }
   },
-  async getGenres() {
+
+  async getGenres(language = 'en-US') {
     try {
-      const response = await instance.get('/api/tv/genres');
-      return response.data; // Директно връщаме масива с жанрове
+      const response = await instance.get('/api/tv/genres', {
+        params: { language }
+      });
+      return response.data;
     } catch (error) {
       console.error('Error fetching TV show genres:', error);
       throw error;
     }
   },
-  
 
-  // Временна заглушка - ще я имплементираме по-късно
-  async getByGenre(genreId) {
+  async getByGenre(genreId, language = 'en-US', page = 1) {
     try {
-      const response = await instance.get('/api/tv/trending');
-      return response.data;
+      const response = await instance.get(`/api/tv/genre/${genreId}`, {
+        params: { language, page }
+      });
+      return {
+        shows: response.data.results || response.data,
+        page: response.data.page || page,
+        totalPages: response.data.total_pages || 1,
+        totalResults: response.data.total_results || (response.data.results ? response.data.results.length : 0)
+      };
     } catch (error) {
-      console.error('Error fetching TV shows by genre:', error);
+      console.error(`Error fetching TV shows for genre ${genreId}:`, error);
+      throw error;
+    }
+  },
+
+  async search(query, language = 'en-US', page = 1) {
+    try {
+      const response = await instance.get('/api/tv/search', {
+        params: { query, language, page }
+      });
+      return {
+        shows: response.data.results || response.data,
+        page: response.data.page || page,
+        totalPages: response.data.total_pages || 1,
+        totalResults: response.data.total_results || (response.data.results ? response.data.results.length : 0)
+      };
+    } catch (error) {
+      console.error(`Error searching TV shows for "${query}":`, error);
+      throw error;
+    }
+  },
+
+  async getSimilar(id, language = 'en-US', page = 1) {
+    try {
+      const response = await instance.get(`/api/tv/${id}/similar`, {
+        params: { language, page }
+      });
+      return {
+        shows: response.data.results || response.data,
+        page: response.data.page || page,
+        totalPages: response.data.total_pages || 1,
+        totalResults: response.data.total_results || (response.data.results ? response.data.results.length : 0)
+      };
+    } catch (error) {
+      console.error(`Error fetching similar TV shows for ID ${id}:`, error);
       throw error;
     }
   }

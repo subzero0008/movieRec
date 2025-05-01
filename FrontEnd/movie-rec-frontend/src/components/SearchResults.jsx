@@ -1,36 +1,97 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { MoviesService } from '../services/MoviesService'; // Поправен импорт
 
 function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { movies = [], query = '' } = location.state || {};
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const { state } = location;
+  const initialQuery = state?.query || '';
+  const [query, setQuery] = useState(initialQuery);
+  const [movies, setMovies] = useState(Array.isArray(state?.movies) ? state.movies : []);
 
-  // Функция за обработка на клик върху филм
-  const handleMovieClick = (tmdbMovieId, e) => {
-    // Предотвратяване на стандартното поведение на Link
-    e.preventDefault();
-    navigate(`/movies/${tmdbMovieId}`);
+  // Зареждане на резултати при промяна на query параметър в URL
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const urlQuery = searchParams.get('query');
+    
+    if (urlQuery && urlQuery !== query) {
+      handleSearch(urlQuery);
+    }
+  }, [location.search]);
+
+  const handleSearch = async (searchQuery) => {
+    if (!searchQuery.trim()) return;
+    
+    setIsLoading(true);
+    setError(null);
+    setQuery(searchQuery);
+    
+    try {
+      const results = await MoviesService.searchMovies(searchQuery);
+      console.log('Search results:', results); // Добавете това за дебъг
+      setMovies(results.movies);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch search results');
+      console.error('Search error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Ако няма данни, ще се покаже съобщение
-  useEffect(() => {
-    if (!location.state) {
-      console.warn('No search data available. Redirecting might be necessary.');
-    }
-  }, [location.state]);
+  const handleMovieClick = (movieId, e) => {
+    e.preventDefault();
+    navigate(`/movies/${movieId}`);
+  };
 
-  if (!location.state) {
+  if (!query) {
     return (
       <div className="bg-gray-900 min-h-screen flex items-center justify-center">
         <div className="text-white text-center p-8">
-          <h2 className="text-2xl font-bold mb-4">No search data available</h2>
-          <p className="mb-4">Please try your search again.</p>
+          <h2 className="text-2xl font-bold mb-4">No search query provided</h2>
+          <p className="mb-4">Please enter a search term.</p>
           <Link 
             to="/" 
             className="inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2 px-4 rounded transition duration-300"
           >
             Return Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-white text-center">
+          <h2 className="text-2xl font-bold mb-4">Searching for "{query}"...</h2>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500 mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-white text-center p-8">
+          <h2 className="text-2xl font-bold mb-4">Error searching for movies</h2>
+          <p className="text-red-400 mb-4">{error}</p>
+          <button
+            onClick={() => handleSearch(query)}
+            className="mr-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+          >
+            Retry
+          </button>
+          <Link 
+            to="/movies" 
+            className="inline-block bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+          >
+            Browse All Movies
           </Link>
         </div>
       </div>
@@ -71,12 +132,12 @@ function SearchResults() {
             <div
               key={movie.id}
               className="group cursor-pointer"
-              onClick={(e) => handleMovieClick(movie.tmdbMovieId || movie.id, e)}
+              onClick={(e) => handleMovieClick(movie.id, e)}
             >
               <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-105 h-full flex flex-col">
                 <div className="relative pt-[150%] overflow-hidden">
                   <img
-                    src={movie.posterUrl || 'https://via.placeholder.com/500x750?text=No+Poster'}
+                    src={movie.posterUrl || `https://image.tmdb.org/t/p/w500${movie.posterPath}` || 'https://via.placeholder.com/500x750?text=No+Poster'}
                     alt={movie.title}
                     className="absolute top-0 left-0 w-full h-full object-cover transition duration-500 group-hover:opacity-80"
                     onError={(e) => {

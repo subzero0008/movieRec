@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TvShowsService } from '../services/TvShowsService';
-import TvShowCard from '../TVShowCard';
+import { MoviesService } from '../services/MoviesService';
+import MovieCard from '../MovieCard';
 
-const TvShowsList = () => {
-  const [tvShows, setTvShows] = useState([]);
+const MoviesList = () => {
+  const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('trending');
@@ -14,8 +14,8 @@ const TvShowsList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
 
-  // Функция за зареждане на TV shows
-  const loadTvShows = async (category = 'trending', genreId = null, page = 1) => {
+  // Функция за зареждане на филми
+  const loadMovies = async (category = 'trending', genreId = null, page = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -23,35 +23,35 @@ const TvShowsList = () => {
       let response;
       
       if (genreId) {
-        response = await TvShowsService.getByGenre(genreId, 'en-US', page);
+        response = await MoviesService.getByGenre(genreId, page);
       } else {
         switch (category) {
           case 'trending':
-            response = await TvShowsService.getTrending('en-US', page);
+            response = await MoviesService.getTrending(page);
             break;
           case 'popular':
-            response = await TvShowsService.getPopular('en-US', page);
+            response = await MoviesService.getPopular(page);
             break;
           case 'top-rated':
-            response = await TvShowsService.getTopRated('en-US', page);
+            response = await MoviesService.getTopRated(page);
             break;
           default:
-            response = await TvShowsService.getTrending('en-US', page);
+            response = await MoviesService.getTrending(page);
         }
       }
       
       if (page > 1) {
-        setTvShows(prev => [...prev, ...response.shows]);
+        setMovies(prev => [...prev, ...response.movies]);
       } else {
-        setTvShows(response.shows);
+        setMovies(response.movies);
       }
       
       setCurrentPage(response.page);
       setTotalPages(response.totalPages);
       setTotalResults(response.totalResults);
     } catch (err) {
-      setError(err.message || 'Failed to load TV shows');
-      console.error('Error loading TV shows:', err);
+      setError(err.message || 'Failed to load movies');
+      console.error('Error loading movies:', err);
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ const TvShowsList = () => {
   // Зареждане на жанровете
   const loadGenres = async () => {
     try {
-      const genresData = await TvShowsService.getGenres();
+      const genresData = await MoviesService.getGenres();
       setGenres(genresData);
     } catch (err) {
       console.error('Error loading genres:', err);
@@ -71,7 +71,7 @@ const TvShowsList = () => {
   useEffect(() => {
     const initialize = async () => {
       await loadGenres();
-      await loadTvShows(selectedCategory);
+      await loadMovies(selectedCategory);
     };
 
     initialize();
@@ -80,7 +80,7 @@ const TvShowsList = () => {
   // Ефект за смяна на жанра
   useEffect(() => {
     if (selectedGenre) {
-      loadTvShows(selectedCategory, selectedGenre);
+      loadMovies(selectedCategory, selectedGenre);
     }
   }, [selectedGenre]);
 
@@ -88,7 +88,7 @@ const TvShowsList = () => {
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     setSelectedGenre(null);
-    loadTvShows(category);
+    loadMovies(category);
   };
 
   // Функция за смяна на жанра
@@ -100,7 +100,7 @@ const TvShowsList = () => {
   // Функция за зареждане на следваща страница
   const loadMore = () => {
     const nextPage = currentPage + 1;
-    loadTvShows(selectedCategory, selectedGenre, nextPage);
+    loadMovies(selectedCategory, selectedGenre, nextPage);
   };
 
   if (loading && currentPage === 1) {
@@ -132,14 +132,14 @@ const TvShowsList = () => {
   const getTitle = () => {
     if (selectedGenre) {
       const genre = genres.find(g => g.id === selectedGenre);
-      return genre ? `${genre.name} TV Shows (${totalResults} results)` : 'TV Shows by Genre';
+      return genre ? `${genre.name} Movies (${totalResults} results)` : 'Movies by Genre';
     }
     
     switch (selectedCategory) {
-      case 'trending': return `Trending TV Shows (${totalResults} results)`;
-      case 'popular': return `Popular TV Shows (${totalResults} results)`;
-      case 'top-rated': return `Top Rated TV Shows (${totalResults} results)`;
-      default: return `TV Shows (${totalResults} results)`;
+      case 'trending': return `Trending Movies (${totalResults} results)`;
+      case 'popular': return `Popular Movies (${totalResults} results)`;
+      case 'top-rated': return `Top Rated Movies (${totalResults} results)`;
+      default: return `Movies (${totalResults} results)`;
     }
   };
 
@@ -151,7 +151,7 @@ const TvShowsList = () => {
         </h1>
         
         <Link 
-          to="/tv/search" 
+          to="/movies/search" 
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
         >
           Advanced Search
@@ -194,21 +194,21 @@ const TvShowsList = () => {
         </div>
       </div>
 
-      {/* Списък с TV shows */}
-      {tvShows.length > 0 ? (
+      {/* Списък с филми */}
+      {movies.length > 0 ? (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {tvShows.map((show) => (
-              <TvShowCard 
-                key={show.id}
-                show={{
-                  id: show.id,
-                  name: show.name,
-                  posterPath: show.poster_path || show.posterPath,
-                  voteAverage: show.vote_average || show.voteAverage,
-                  firstAirDate: show.first_air_date || show.firstAirDate,
-                  voteCount: show.vote_count || show.voteCount,
-                  genreIds: show.genre_ids || show.genreIds
+            {movies.map((movie) => (
+              <MovieCard 
+                key={movie.id}
+                movie={{
+                  id: movie.id,
+                  title: movie.title,
+                  posterPath: movie.poster_path || movie.posterPath,
+                  voteAverage: movie.vote_average || movie.voteAverage,
+                  releaseDate: movie.release_date || movie.releaseDate,
+                  voteCount: movie.vote_count || movie.voteCount,
+                  genreIds: movie.genre_ids || movie.genreIds
                 }}
                 allGenres={genres}
               />
@@ -230,9 +230,9 @@ const TvShowsList = () => {
         </>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-400 text-xl">No TV shows found</p>
+          <p className="text-gray-400 text-xl">No movies found</p>
           <button 
-            onClick={() => loadTvShows(selectedCategory, selectedGenre)}
+            onClick={() => loadMovies(selectedCategory, selectedGenre)}
             className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
             Retry
@@ -243,4 +243,4 @@ const TvShowsList = () => {
   );
 };
 
-export default TvShowsList;
+export default MoviesList;
