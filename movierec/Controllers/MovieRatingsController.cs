@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
+using System.Globalization;
 
 [Route("api/movieratings")]
 [ApiController]
@@ -265,7 +266,7 @@ public class MovieRatingsController : ControllerBase
                  r.Rating,
                  r.Review,
                  r.RatedOn,
-                 UserName = r.User.UserName 
+                 UserName = r.User.UserName
              })
                 .ToListAsync();
 
@@ -286,6 +287,240 @@ public class MovieRatingsController : ControllerBase
                 Error = ex.Message
             });
         }
+    }
+   [HttpGet("top-rated-all")]
+[Authorize(Roles = "Cinema")]
+public async Task<IActionResult> GetTopRatedMoviesAllTime()
+{
+    try
+    {
+        var groupedRatings = await _context.MovieRatings
+            .GroupBy(r => r.MovieId)
+            .Select(g => new
+            {
+                MovieId = g.Key,
+                AverageRating = g.Average(r => r.Rating),
+                RatingCount = g.Count(),
+                LastRated = g.Max(r => r.RatedOn)
+            })
+            .Where(g => g.RatingCount >= 5)
+            .OrderByDescending(g => g.AverageRating)
+            .ThenByDescending(g => g.RatingCount)
+            .Take(10)
+            .ToListAsync();
+
+        var movieDetails = new List<MovieRatingDto>();
+        foreach (var item in groupedRatings)
+        {
+            try
+            {
+                var details = await _tmdbService.GetMovieDetailsWithCreditsAsync(item.MovieId);
+                if (details == null) continue;
+
+                DateTime? releaseDate = null;
+                int? releaseYear = null;
+                if (!string.IsNullOrEmpty(details.ReleaseDate) &&
+                    DateTime.TryParse(details.ReleaseDate, out var parsedDate))
+                {
+                    releaseDate = parsedDate;
+                    releaseYear = parsedDate.Year;
+                }
+
+                movieDetails.Add(new MovieRatingDto
+                {
+                    MovieId = item.MovieId,
+                    MovieTitle = details.Title ?? "Unknown",
+                    PosterPath = details.PosterPath != null
+                        ? $"https://image.tmdb.org/t/p/w200{details.PosterPath}"
+                        : null,
+                    Genres = details.Genres?.Select(g => new GenreDto { Id = g.Id, Name = g.Name }).ToList(),
+                    AverageRating = Math.Round(item.AverageRating, 1),
+                    TmdbVoteAverage = details.VoteAverage, // Добавено TMDB рейтинг
+                    RatingCount = item.RatingCount,
+                    LastRated = item.LastRated.ToString("yyyy-MM-dd"),
+                    ReleaseDate = releaseDate?.ToString("yyyy-MM-dd"),
+                    ReleaseYear = releaseYear
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error processing movie {MovieId}", item.MovieId);
+                continue;
+            }
+        }
+
+        return Ok(new
+        {
+            Success = true,
+            TotalMovies = movieDetails.Count,
+            Movies = movieDetails
+        });
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error fetching top rated movies (all time)");
+        return StatusCode(500, new
+        {
+            Success = false,
+            Message = "An error occurred while processing the request",
+            Error = ex.Message
+        });
+    }
+}
+    [HttpGet("top-rated")]
+    [Authorize(Roles = "Cinema")]
+    public async Task<IActionResult> GetTopRatedMovies(
+    [FromQuery] int? genreId = null,
+    [FromQuery] int? year = null,
+    [FromQuery] int? month = null)
+    {
+        try
+        {
+            var ratingsQuery = _context.MovieRatings
+                .AsQueryable();
+
+            if (year.HasValue && month.HasValue)
+            {
+                var startDate = new DateTime(year.Value, month.Value, 1);
+                var endDate = startDate.AddMonths(1).AddDays(-1);
+                ratingsQuery = ratingsQuery
+                    .Where(r => r.RatedOn >= startDate && r.RatedOn <= endDate);
+            }
+
+            var groupedRatings = await ratingsQuery
+                .GroupBy(r => r.MovieId)
+                .Select(g => new
+                {
+                    MovieId = g.Key,
+                    AverageRating = g.Average(r => r.Rating),
+                    RatingCount = g.Count(),
+                    LastRated = g.Max(r => r.RatedOn)
+                })
+                .Where(g => g.RatingCount >= 1)
+                .OrderByDescending(g => g.AverageRating)
+                .ThenByDescending(g => g.RatingCount)
+                .Take(20)
+                .ToListAsync();
+
+            var movieDetails = new List<MovieRatingDto>();
+            foreach (var item in groupedRatings)
+            {
+                try
+                {
+                    var details = await _tmdbService.GetMovieDetailsWithCreditsAsync(item.MovieId);
+                    if (details == null) continue;
+
+                    if (genreId.HasValue)
+                    {
+                        var hasGenre = details.Genres?.Any(g => g.Id == genreId.Value) ?? false;
+                        if (!hasGenre) continue;
+                    }
+
+                    DateTime? releaseDate = null;
+                    int? releaseYear = null;
+                    if (!string.IsNullOrEmpty(details.ReleaseDate) &&
+                        DateTime.TryParse(details.ReleaseDate, out var parsedDate))
+                    {
+                        releaseDate = parsedDate;
+                        releaseYear = parsedDate.Year;
+                    }
+
+                    movieDetails.Add(new MovieRatingDto
+                    {
+                        MovieId = item.MovieId,
+                        MovieTitle = details.Title ?? "Unknown",
+                        PosterPath = details.PosterPath != null
+                            ? $"https://image.tmdb.org/t/p/w200{details.PosterPath}"
+                            : null,
+                        Genres = details.Genres?.Select(g => new GenreDto { Id = g.Id, Name = g.Name }).ToList(),
+                        AverageRating = Math.Round(item.AverageRating, 1),
+                        TmdbVoteAverage = details.VoteAverage, // Добавено TMDB рейтинг
+                        RatingCount = item.RatingCount,
+                        LastRated = item.LastRated.ToString("yyyy-MM-dd"),
+                        ReleaseDate = releaseDate?.ToString("yyyy-MM-dd"),
+                        ReleaseYear = releaseYear
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Error processing movie {MovieId}", item.MovieId);
+                    continue;
+                }
+            }
+
+            var finalResults = movieDetails
+                .OrderByDescending(m => m.AverageRating)
+                .ThenByDescending(m => m.RatingCount)
+                .Take(10)
+                .ToList();
+
+            return Ok(new
+            {
+                Success = true,
+                TimePeriod = year.HasValue && month.HasValue
+                    ? new DateTime(year.Value, month.Value, 1).ToString("MMMM yyyy", new CultureInfo("bg-BG"))
+                    : "All time",
+                GenreId = genreId,
+                TotalMovies = finalResults.Count,
+                Movies = finalResults
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching top rated movies");
+            return StatusCode(500, new
+            {
+                Success = false,
+                Message = "An error occurred while processing the request",
+                Error = ex.Message
+            });
+        }
+    }
+
+    // DTO класове
+    public class MovieRatingDto
+    {
+        public int MovieId { get; set; }
+        public string MovieTitle { get; set; }
+        public string PosterPath { get; set; }
+        public List<GenreDto> Genres { get; set; }
+        public double AverageRating { get; set; } // Локален рейтинг (1-5)
+        public double TmdbVoteAverage { get; set; } // TMDB рейтинг (1-10)
+        public int RatingCount { get; set; }
+        public string LastRated { get; set; }
+        public string ReleaseDate { get; set; }
+        public int? ReleaseYear { get; set; }
+        public List<UserRatingDto> UserRatings { get; set; }
+    }
+
+    public class GenreDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class UserRatingDto
+    {
+        public string UserName { get; set; }
+        public double Rating { get; set; }
+        public string Review { get; set; }
+        public DateTime RatedOn { get; set; }
+        public int MovieId { get; internal set; }
+        public string MovieTitle { get; internal set; }
+        public List<string> MovieGenres { get; internal set; }
+    }
+
+    public class RateMovieDto
+    {
+        [Required(ErrorMessage = "Изисква се идентификатор на филм")]
+        public int MovieId { get; set; }
+
+        [Required(ErrorMessage = "Изисква се рейтинг")]
+        [Range(1, 5, ErrorMessage = "Рейтингът трябва да е между 1 и 5")]
+        public double Rating { get; set; }
+
+        [StringLength(1000, ErrorMessage = "Ревюто не трябва да надвишава 1000 символа")]
+        public string? Review { get; set; }
     }
 
     [HttpDelete("{movieId}")]
@@ -317,6 +552,8 @@ public class MovieRatingsController : ControllerBase
 
             _context.MovieRatings.Remove(rating);
             await _context.SaveChangesAsync();
+
+            // Изчистване на кеша
             for (int count = 1; count <= 100; count++)
             {
                 _cache.Remove($"recs_{userId}_{count}");
@@ -343,27 +580,4 @@ public class MovieRatingsController : ControllerBase
             });
         }
     }
-}
-
-public class RateMovieDto
-{
-    [Required(ErrorMessage = "Изисква се идентификатор на филм")]
-    public int MovieId { get; set; }
-
-    [Required(ErrorMessage = "Изисква се рейтинг")]
-    [Range(1, 5, ErrorMessage = "Рейтингът трябва да е между 1 и 5")]
-    public double Rating { get; set; }
-
-    [StringLength(1000, ErrorMessage = "Ревюто не трябва да надвишава 1000 символа")]
-    public string? Review { get; set; }
-}
-
-public class UserRatingDto
-{
-    public int MovieId { get; set; }
-    public double Rating { get; set; }
-    public DateTime RatedOn { get; set; }
-    public string Review { get; set; }
-    public string MovieTitle { get; set; } // Existing property
-    public List<string> MovieGenres { get; set; } // New property
 }

@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using System;
+using movierec.DTOs;
+
 
 namespace MovieRecAPI.Controllers
 {
@@ -46,20 +48,31 @@ namespace MovieRecAPI.Controllers
             var user = new AppUser
             {
                 UserName = model.Username,
-                Email = model.Email
+                Email = model.Email,
+                IsCinema = model.RegisterAsCinema,
+                CinemaName = model.RegisterAsCinema ? model.CinemaName : null,
+                City = model.RegisterAsCinema ? model.City : null,
+                PhoneNumber = model.RegisterAsCinema ? model.PhoneNumber : null
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
-                return Ok(new { message = "Registration successful" });
+                // Добавяме роля според избора
+                var role = model.RegisterAsCinema ? "Cinema" : "User";
+                await _userManager.AddToRoleAsync(user, role);
+
+                return Ok(new
+                {
+                    message = "Registration successful",
+                    userType = role
+                });
             }
 
             return BadRequest(result.Errors);
         }
 
-        // POST: api/account/login
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
@@ -67,6 +80,7 @@ namespace MovieRecAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // Намиране на потребителя по email или username
             var user = model.Identifier.Contains('@')
                 ? await _userManager.FindByEmailAsync(model.Identifier)
                 : await _userManager.FindByNameAsync(model.Identifier);
@@ -74,6 +88,7 @@ namespace MovieRecAPI.Controllers
             if (user == null)
                 return Unauthorized("Invalid credentials");
 
+            // Проверка на паролата
             var result = await _signInManager.PasswordSignInAsync(
                 user,
                 model.Password,
@@ -88,18 +103,31 @@ namespace MovieRecAPI.Controllers
                 return Unauthorized("Invalid credentials");
             }
 
+            // Вземане на ролите на потребителя
+            var roles = await _userManager.GetRolesAsync(user);
+            var primaryRole = roles.FirstOrDefault(); // Взимаме първата роля
+
+            // Подготовка на claims за JWT токена
+            var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.Name, user.UserName)
+    };
+
+            // Добавяне на ролята като claim, ако съществува
+            if (!string.IsNullOrEmpty(primaryRole))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, primaryRole));
+            }
+
             // Генериране на JWT токен
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:JwtKey"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.Name, user.UserName)
-                }),
+                Subject = new ClaimsIdentity(claims),
                 Issuer = _configuration["JwtSettings:JwtIssuer"],
                 Audience = _configuration["JwtSettings:JwtAudience"],
                 Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:JwtExpireMinutes"])),
@@ -120,7 +148,7 @@ namespace MovieRecAPI.Controllers
                 Expires = tokenDescriptor.Expires
             });
 
-            // Връщане на токена и в тялото на отговора за фронтенда
+            // Връщане на отговор с потребителски данни и токен
             return Ok(new
             {
                 message = "Login successful",
@@ -128,9 +156,10 @@ namespace MovieRecAPI.Controllers
                 {
                     userName = user.UserName,
                     email = user.Email,
-                    id = user.Id
+                    id = user.Id,
+                    role = primaryRole // Добавена роля в отговора
                 },
-                token = jwtToken // Добавен токен за фронтенда
+                token = jwtToken
             });
         }
 
@@ -147,17 +176,23 @@ namespace MovieRecAPI.Controllers
         // GET: api/account/currentuser (допълнително)
         [HttpGet("currentuser")]
         [Authorize]
-        public IActionResult GetCurrentUser()
+        public async Task<IActionResult> GetCurrentUser()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userName = User.FindFirstValue(ClaimTypes.Name);
             var userEmail = User.FindFirstValue(JwtRegisteredClaimNames.Email);
 
+            // Вземете потребителя и неговата роля
+            var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault();
+
             return Ok(new
             {
                 id = userId,
                 userName,
-                email = userEmail
+                email = userEmail,
+                role // Добавете ролята
             });
         }
         [HttpPut("update-profile")]
@@ -212,31 +247,4 @@ namespace MovieRecAPI.Controllers
         }
     }
 
-        public class RegisterDto
-    {
-        [Required(ErrorMessage = "Username is required")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 20 characters")]
-        public string Username { get; set; }
-
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        public string Email { get; set; }
-
-        [Required(ErrorMessage = "Password is required")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters")]
-        public string Password { get; set; }
-
-        [Required(ErrorMessage = "Confirm Password is required")]
-        [Compare("Password", ErrorMessage = "Passwords do not match")]
-        public string ConfirmPassword { get; set; }
-    }
-
-    public class LoginDto
-    {
-        [Required(ErrorMessage = "Username or Email is required")]
-        public string Identifier { get; set; }
-
-        [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; }
-    }
 }

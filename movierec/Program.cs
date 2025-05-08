@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using MovieRecAPI.Services;
+using System.Security.Claims;
 using MovieRec.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,8 +19,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<RecommendationService>();
 builder.Services.AddScoped<UserMovieService>();
 builder.Services.AddSingleton<RecommendationCacheService>();
-
-
+builder.Services.AddScoped<SurveyService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -29,15 +29,15 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials()
-        .WithExposedHeaders("Set-Cookie")); // Важно за бисквитки
+        .WithExposedHeaders("Set-Cookie"));
 });
 
-// Configure database
+// Configure database FIRST
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<MovieRecDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Configure Identity
+// Configure Identity with roles
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -45,11 +45,26 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = false;
 })
 .AddEntityFrameworkStores<MovieRecDbContext>()
 .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<SurveyService>();
+// Add authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireCinemaRole", policy =>
+        policy.RequireRole("Cinema"));
+
+    options.AddPolicy("RequireAdminRole", policy =>
+        policy.RequireRole("Admin"));
+
+    options.AddPolicy("RequireUserRole", policy =>
+        policy.RequireRole("User"));
+});
+
+// Configure JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,13 +88,32 @@ builder.Services.AddAuthentication(options =>
 
     options.Events = new JwtBearerEvents
     {
-        OnMessageReceived = context => // Четене на токен от бисквитка
+        OnMessageReceived = context =>
         {
             if (context.Request.Cookies.TryGetValue("access_token", out var token))
             {
                 context.Token = token;
             }
             return Task.CompletedTask;
+        },
+        OnTokenValidated = async context =>
+        {
+            var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<AppUser>>();
+            var user = await userManager.GetUserAsync(context.Principal);
+
+            if (user != null)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+                var claims = new List<Claim>();
+
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var appIdentity = new ClaimsIdentity(claims);
+                context.Principal.AddIdentity(appIdentity);
+            }
         },
         OnAuthenticationFailed = context =>
         {
@@ -88,7 +122,7 @@ builder.Services.AddAuthentication(options =>
         }
     };
 })
-.AddCookie(); // Добавяне на cookie authentication
+.AddCookie();
 
 // Configure TMDb service
 builder.Services.AddHttpClient<TMDbService>(client =>
@@ -159,18 +193,48 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Initialize roles
+// Initialize roles and admin user
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var roles = new[] { "Admin", "Normal User", "Cinema/Streaming Provider", "Guest" };
-
-    foreach (var role in roles)
+    var services = scope.ServiceProvider;
+    try
     {
-        if (!await roleManager.RoleExistsAsync(role))
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = services.GetRequiredService<UserManager<AppUser>>();
+
+        // Create roles
+        var roles = new[] { "Admin", "User", "Cinema", "Guest" };
+        foreach (var role in roles)
         {
-            await roleManager.CreateAsync(new IdentityRole(role));
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
         }
+
+        // Create admin user if not exists
+        var adminEmail = "admin@example.com";
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+        if (adminUser == null)
+        {
+            var admin = new AppUser
+            {
+                UserName = "admin",
+                Email = adminEmail,
+                EmailConfirmed = true
+            };
+
+            var createAdmin = await userManager.CreateAsync(admin, "Admin123!");
+            if (createAdmin.Succeeded)
+            {
+                await userManager.AddToRoleAsync(admin, "Admin");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
     }
 }
 
@@ -187,7 +251,7 @@ app.Use(async (context, next) =>
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors("AllowReactApp"); // CORS before auth
+app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
 

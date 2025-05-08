@@ -19,7 +19,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MovieRecAPI.Controllers.LoginDto",
+        "Type": "movierec.DTOs.LoginDto",
         "IsRequired": true
       }
     ],
@@ -45,7 +45,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MovieRecAPI.Controllers.RegisterDto",
+        "Type": "RegisterDto",
         "IsRequired": true
       }
     ],
@@ -65,6 +65,53 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CinemaPollsController",
+    "Method": "CreatePoll",
+    "RelativePath": "api/CinemaPolls",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pollDto",
+        "Type": "CreatePollDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CinemaPollsController",
+    "Method": "Vote",
+    "RelativePath": "api/CinemaPolls/{pollId}/vote/{optionId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pollId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "optionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CinemaPollsController",
+    "Method": "GetActivePolls",
+    "RelativePath": "api/CinemaPolls/active",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -109,10 +156,46 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "RateMovieDto",
+        "Type": "MovieRatingsController\u002BRateMovieDto",
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MovieRatingsController",
+    "Method": "GetTopRatedMovies",
+    "RelativePath": "api/movieratings/top-rated",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "genreId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "year",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "month",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MovieRatingsController",
+    "Method": "GetTopRatedMoviesAllTime",
+    "RelativePath": "api/movieratings/top-rated-all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -151,7 +234,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[UserRatingDto, movierec, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[MovieRatingsController\u002BUserRatingDto, movierec, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
