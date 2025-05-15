@@ -123,81 +123,6 @@
         }
       }
     },
-    "/api/CinemaPolls": {
-      "post": {
-        "tags": [
-          "CinemaPolls"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePollDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePollDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePollDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/CinemaPolls/active": {
-      "get": {
-        "tags": [
-          "CinemaPolls"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/CinemaPolls/{pollId}/vote/{optionId}": {
-      "post": {
-        "tags": [
-          "CinemaPolls"
-        ],
-        "parameters": [
-          {
-            "name": "pollId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "optionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/movieratings/rate": {
       "post": {
         "tags": [
@@ -567,6 +492,150 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/polls": {
+      "post": {
+        "tags": [
+          "Poll"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePollDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePollDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePollDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/polls/{id}": {
+      "get": {
+        "tags": [
+          "Poll"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/polls/{pollId}/vote-status": {
+      "get": {
+        "tags": [
+          "Poll"
+        ],
+        "parameters": [
+          {
+            "name": "pollId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/polls/{pollId}/vote/{movieId}": {
+      "post": {
+        "tags": [
+          "Poll"
+        ],
+        "parameters": [
+          {
+            "name": "pollId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "movieId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/polls/{pollId}/results": {
+      "get": {
+        "tags": [
+          "Poll"
+        ],
+        "parameters": [
+          {
+            "name": "pollId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/polls/active": {
+      "get": {
+        "tags": [
+          "Poll"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -1096,35 +1165,31 @@
         "additionalProperties": false
       },
       "CreatePollDto": {
-        "required": [
-          "endDate",
-          "options",
-          "title"
-        ],
         "type": "object",
         "properties": {
           "title": {
-            "maxLength": 100,
-            "minLength": 0,
-            "type": "string"
-          },
-          "description": {
-            "maxLength": 500,
-            "minLength": 0,
             "type": "string",
             "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
           },
           "endDate": {
             "type": "string",
             "format": "date-time"
           },
-          "options": {
-            "maxItems": 5,
-            "minItems": 2,
+          "movieIds": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PollOptionDto"
-            }
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1264,42 +1329,11 @@
             "type": "string",
             "nullable": true,
             "readOnly": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PollOptionDto": {
-        "required": [
-          "movieId",
-          "moviePosterUrl",
-          "movieTitle"
-        ],
-        "type": "object",
-        "properties": {
-          "movieId": {
-            "type": "integer",
-            "format": "int32"
           },
-          "movieTitle": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "moviePosterUrl": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "movieBackdropUrl": {
+          "backdropPath": {
             "type": "string",
-            "nullable": true
-          },
-          "releaseDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "overview": {
-            "type": "string",
-            "nullable": true
+            "nullable": true,
+            "readOnly": true
           }
         },
         "additionalProperties": false

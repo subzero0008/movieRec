@@ -69,6 +69,8 @@ namespace movierec.Models
         [JsonIgnore]
         public string ReleaseYear => GetReleaseYear();
 
+        public string? BackdropUrl { get; internal set; }
+
         private string GetReleaseYear()
         {
             if (string.IsNullOrEmpty(ReleaseDate))
@@ -107,9 +109,9 @@ namespace movierec.Models
 
         [JsonIgnore]
         public string BackdropUrl =>
-            string.IsNullOrEmpty(BackdropPath)
-                ? "/images/default-backdrop.jpg"
-                : $"https://image.tmdb.org/t/p/original{BackdropPath}";
+         string.IsNullOrEmpty(BackdropPath)
+             ? "/images/default-backdrop.jpg"
+             : $"https://image.tmdb.org/t/p/original{BackdropPath}";
     }
 
     [NotMapped]

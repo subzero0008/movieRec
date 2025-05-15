@@ -61,6 +61,8 @@ namespace movierec.Models
         [JsonIgnore]
         public string ReleaseYear => GetReleaseYear();
 
+        public string? BackdropPath { get; internal set; }
+
         private string GetReleaseYear()
         {
             if (string.IsNullOrEmpty(ReleaseDate)) return "N/A";

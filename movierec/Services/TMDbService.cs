@@ -322,6 +322,38 @@ public class TMDbService
             .Select(g => g.Id)
             .ToList();
     }
+    public async Task<MovieDetails> GetMovieDetailsAsync(int movieId)
+    {
+        try
+        {
+            // 1. Добавете API ключа към основната заявка
+            var response = await _httpClient.GetAsync($"movie/{movieId}?api_key={_apiKey}&language=en-US");
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var movieDetails = JsonConvert.DeserializeObject<MovieDetails>(content);
+
+            // 2. Добавете API ключа и към заявката за credits
+            var creditsResponse = await _httpClient.GetAsync($"movie/{movieId}/credits?api_key={_apiKey}");
+            if (creditsResponse.IsSuccessStatusCode)
+            {
+                var creditsContent = await creditsResponse.Content.ReadAsStringAsync();
+                movieDetails.Credits = JsonConvert.DeserializeObject<Credits>(creditsContent);
+            }
+
+            return movieDetails;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            _logger.LogWarning($"Movie with ID {movieId} not found in TMDB");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error fetching movie details for ID {movieId}");
+            return null;
+        }
+    }
 
     public async Task<List<Genre>> GetMovieGenresAsync()
     {

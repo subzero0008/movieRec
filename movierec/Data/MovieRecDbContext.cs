@@ -18,8 +18,9 @@ namespace MovieRecAPI.Data
         public DbSet<MovieRating> MovieRatings { get; set; }
         public DbSet<FavoriteMovie> FavoriteMovies { get; set; }
         public DbSet<WatchedMovie> WatchedMovies { get; set; }
-        public DbSet<CinemaPoll> CinemaPolls { get; set; }
-        public DbSet<PollOption> PollOptions { get; set; }
+        public DbSet<Poll> Polls { get; set; }
+        public DbSet<PollMovie> PollMovies { get; set; }
+        public DbSet<PollVote> PollVotes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -58,17 +59,40 @@ namespace MovieRecAPI.Data
                 .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<CinemaPoll>()
-                .HasOne(cp => cp.AppUser)
-                .WithMany(u => u.CinemaPolls)
-                .HasForeignKey(cp => cp.AppUserId)
+            // Poll configurations
+            builder.Entity<Poll>()
+                .HasMany(p => p.Movies)
+                .WithOne(m => m.Poll)
+                .HasForeignKey(m => m.PollId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<PollOption>()
-                .HasOne(po => po.CinemaPoll)
-                .WithMany(cp => cp.PollOptions)
-                .HasForeignKey(po => po.CinemaPollId)
+            builder.Entity<Poll>()
+                .HasMany(p => p.Votes)
+                .WithOne(v => v.Poll)
+                .HasForeignKey(v => v.PollId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<PollMovie>()
+                .HasOne(m => m.Poll)
+                .WithMany(p => p.Movies)
+                .HasForeignKey(m => m.PollId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<PollVote>()
+                .HasOne(v => v.Poll)
+                .WithMany(p => p.Votes)
+                .HasForeignKey(v => v.PollId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<PollVote>()
+                .HasOne(v => v.PollMovie)
+                .WithMany(m => m.Votes)
+                .HasForeignKey(v => v.PollMovieId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<PollVote>()
+                .HasIndex(v => new { v.PollId, v.UserId })
+                .IsUnique();
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

@@ -68,53 +68,6 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "CinemaPollsController",
-    "Method": "CreatePoll",
-    "RelativePath": "api/CinemaPolls",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "pollDto",
-        "Type": "CreatePollDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "CinemaPollsController",
-    "Method": "Vote",
-    "RelativePath": "api/CinemaPolls/{pollId}/vote/{optionId}",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "pollId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "optionId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "CinemaPollsController",
-    "Method": "GetActivePolls",
-    "RelativePath": "api/CinemaPolls/active",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "MovieRatingsController",
     "Method": "GetMovieRatings",
     "RelativePath": "api/movieratings/{movieId}",
@@ -393,6 +346,101 @@
         "StatusCode": 500
       }
     ]
+  },
+  {
+    "ContainingType": "PollController",
+    "Method": "CreatePoll",
+    "RelativePath": "api/polls",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "CreatePollDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PollController",
+    "Method": "GetPoll",
+    "RelativePath": "api/polls/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PollController",
+    "Method": "GetResults",
+    "RelativePath": "api/polls/{pollId}/results",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pollId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PollController",
+    "Method": "GetVoteStatus",
+    "RelativePath": "api/polls/{pollId}/vote-status",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pollId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PollController",
+    "Method": "Vote",
+    "RelativePath": "api/polls/{pollId}/vote/{movieId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pollId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "movieId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PollController",
+    "Method": "GetActivePolls",
+    "RelativePath": "api/polls/active",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "movierec.Controllers.RecommendationsController",

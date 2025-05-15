@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using MovieRecAPI.Services;
 using System.Security.Claims;
 using MovieRec.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,12 @@ builder.Services.AddScoped<RecommendationService>();
 builder.Services.AddScoped<UserMovieService>();
 builder.Services.AddSingleton<RecommendationCacheService>();
 builder.Services.AddScoped<SurveyService>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.MaxDepth = 32; // Ограничава дълбочината
+    });
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -99,9 +106,7 @@ builder.Services.AddAuthentication(options =>
         OnTokenValidated = async context =>
         {
             var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<AppUser>>();
-            var user = await userManager.GetUserAsync(context.Principal);
-
-            if (user != null)
+            var user = await userManager.GetUserAsync(context.Principal); if (user != null)
             {
                 var roles = await userManager.GetRolesAsync(user);
                 var claims = new List<Claim>();

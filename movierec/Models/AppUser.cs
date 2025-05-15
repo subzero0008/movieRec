@@ -30,6 +30,5 @@ namespace movierec.Models
         public virtual ICollection<WatchedMovie> WatchedMovies { get; set; } = new List<WatchedMovie>();
         
         // Нова колекция за анкети на киноцентъра
-        public virtual ICollection<CinemaPoll> CinemaPolls { get; set; } = new List<CinemaPoll>();
     }
 }

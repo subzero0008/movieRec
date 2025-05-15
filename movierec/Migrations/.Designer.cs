@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieRecAPI.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace movierec.Migrations
 {
     [DbContext(typeof(MovieRecDbContext))]
-    partial class MovieRecDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250509145402_FixReleaseDateColumn")]
+    partial class FixReleaseDateColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,6 +25,41 @@ namespace movierec.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("CinemaPoll", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("CinemaPolls");
+                });
 
             modelBuilder.Entity("FavoriteMovie", b =>
                 {
@@ -213,7 +251,7 @@ namespace movierec.Migrations
                     b.ToTable("MovieRatings");
                 });
 
-            modelBuilder.Entity("Poll", b =>
+            modelBuilder.Entity("Vote", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -221,76 +259,10 @@ namespace movierec.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreatedByUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("ReleaseDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Polls");
-                });
-
-            modelBuilder.Entity("PollMovie", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("OptionId")
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("PollId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("PosterPath")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("TmdbMovieId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PollId");
-
-                    b.ToTable("PollMovies");
-                });
-
-            modelBuilder.Entity("PollVote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("PollId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PollMovieId")
                         .HasColumnType("integer");
 
                     b.Property<string>("UserId")
@@ -302,12 +274,13 @@ namespace movierec.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PollMovieId");
+                    b.HasIndex("OptionId");
 
-                    b.HasIndex("PollId", "UserId")
-                        .IsUnique();
+                    b.HasIndex("PollId");
 
-                    b.ToTable("PollVotes");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Votes");
                 });
 
             modelBuilder.Entity("movierec.Models.AppUser", b =>
@@ -453,6 +426,53 @@ namespace movierec.Migrations
                     b.ToTable("Movies");
                 });
 
+            modelBuilder.Entity("movierec.Models.PollOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CinemaPollId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("MovieBackdropUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("MoviePosterUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("MovieTitle")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Overview")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("ReleaseDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Votes")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CinemaPollId");
+
+                    b.ToTable("PollOptions");
+                });
+
             modelBuilder.Entity("movierec.Models.WatchedMovie", b =>
                 {
                     b.Property<int>("Id")
@@ -482,6 +502,17 @@ namespace movierec.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("WatchedMovies");
+                });
+
+            modelBuilder.Entity("CinemaPoll", b =>
+                {
+                    b.HasOne("movierec.Models.AppUser", "AppUser")
+                        .WithMany("CinemaPolls")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("FavoriteMovie", b =>
@@ -557,34 +588,42 @@ namespace movierec.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PollMovie", b =>
+            modelBuilder.Entity("Vote", b =>
                 {
-                    b.HasOne("Poll", "Poll")
-                        .WithMany("Movies")
+                    b.HasOne("movierec.Models.PollOption", "Option")
+                        .WithMany()
+                        .HasForeignKey("OptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CinemaPoll", "Poll")
+                        .WithMany()
                         .HasForeignKey("PollId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("movierec.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Option");
+
                     b.Navigation("Poll");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PollVote", b =>
+            modelBuilder.Entity("movierec.Models.PollOption", b =>
                 {
-                    b.HasOne("Poll", "Poll")
-                        .WithMany("Votes")
-                        .HasForeignKey("PollId")
+                    b.HasOne("CinemaPoll", "CinemaPoll")
+                        .WithMany("PollOptions")
+                        .HasForeignKey("CinemaPollId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PollMovie", "PollMovie")
-                        .WithMany("Votes")
-                        .HasForeignKey("PollMovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Poll");
-
-                    b.Navigation("PollMovie");
+                    b.Navigation("CinemaPoll");
                 });
 
             modelBuilder.Entity("movierec.Models.WatchedMovie", b =>
@@ -598,20 +637,15 @@ namespace movierec.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Poll", b =>
+            modelBuilder.Entity("CinemaPoll", b =>
                 {
-                    b.Navigation("Movies");
-
-                    b.Navigation("Votes");
-                });
-
-            modelBuilder.Entity("PollMovie", b =>
-                {
-                    b.Navigation("Votes");
+                    b.Navigation("PollOptions");
                 });
 
             modelBuilder.Entity("movierec.Models.AppUser", b =>
                 {
+                    b.Navigation("CinemaPolls");
+
                     b.Navigation("FavoriteMovies");
 
                     b.Navigation("MovieRatings");
