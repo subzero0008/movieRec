@@ -242,27 +242,26 @@ namespace MovieRecAPI.Services
             double score = 0;
             double maxScore = 0;
 
-            // 1. Genres (35% вместо 40%)
+            // 1. Genres (35% )
             var genreScore = movie.GenreInfo?
                 .Sum(g => preferences.GenreWeights.GetValueOrDefault(g.Name, 0)) ?? 0;
             score += genreScore * 0.35;
             maxScore += (preferences.GenreWeights.Any() ? preferences.GenreWeights.Values.Max() : 0) * 0.35;
 
-            // 2. Actors (20% вместо 25%)
+            // 2. Actors (20%)
             var actorScore = movie.MainCast?
                 .Take(5)
                 .Sum(a => preferences.ActorWeights.GetValueOrDefault(a.Name, 0)) ?? 0;
             score += actorScore * 0.20;
             maxScore += (preferences.ActorWeights.Any() ? preferences.ActorWeights.Values.Max() : 0) * 0.20;
 
-            // 3. Directors (15% вместо 20%)
+            // 3. Directors (15%)
             var directorScore = movie.MainCrew?
                 .Where(c => c.Job.Equals("Director", StringComparison.OrdinalIgnoreCase))
                 .Sum(d => preferences.DirectorWeights.GetValueOrDefault(d.Name, 0)) ?? 0;
             score += directorScore * 0.15;
             maxScore += (preferences.DirectorWeights.Any() ? preferences.DirectorWeights.Values.Max() : 0) * 0.15;
 
-            // 4. Keywords (15% ново)
             // 4. Keywords (15% ново)
             var keywordScore = (movie as MovieDetails)?.Keywords?.Keywords
                 ?.Sum(k => preferences.KeywordWeights.GetValueOrDefault(k.Name, 0)) ?? 0;

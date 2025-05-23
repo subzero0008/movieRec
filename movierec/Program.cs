@@ -11,6 +11,7 @@ using MovieRecAPI.Services;
 using System.Security.Claims;
 using MovieRec.Services;
 using System.Text.Json.Serialization;
+using movierec.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddScoped<UserMovieService>();
 builder.Services.AddSingleton<RecommendationCacheService>();
 builder.Services.AddScoped<SurveyService>();
 builder.Services.AddControllers()
+
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -42,7 +44,10 @@ builder.Services.AddCors(options =>
 // Configure database FIRST
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<MovieRecDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString)
+        .EnableDetailedErrors() // Добавете това
+        .EnableSensitiveDataLogging() // Само за development
+        .LogTo(Console.WriteLine, LogLevel.Information)); // Логване на заявки
 
 // Configure Identity with roles
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -128,7 +133,7 @@ builder.Services.AddAuthentication(options =>
     };
 })
 .AddCookie();
-
+builder.Services.AddScoped<AdminController>();
 // Configure TMDb service
 builder.Services.AddHttpClient<TMDbService>(client =>
 {
@@ -184,6 +189,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+
 var app = builder.Build();
 
 // Middleware pipeline
@@ -206,6 +212,8 @@ using (var scope = app.Services.CreateScope())
     {
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = services.GetRequiredService<UserManager<AppUser>>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        var configuration = services.GetRequiredService<IConfiguration>();
 
         // Create roles
         var roles = new[] { "Admin", "User", "Cinema", "Guest" };
@@ -214,25 +222,48 @@ using (var scope = app.Services.CreateScope())
             if (!await roleManager.RoleExistsAsync(role))
             {
                 await roleManager.CreateAsync(new IdentityRole(role));
+                logger.LogInformation($"Created role: {role}");
             }
         }
 
-        // Create admin user if not exists
-        var adminEmail = "admin@example.com";
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
-        if (adminUser == null)
-        {
-            var admin = new AppUser
-            {
-                UserName = "admin",
-                Email = adminEmail,
-                EmailConfirmed = true
-            };
+        // Create admin user from configuration
+        var adminConfig = configuration.GetSection("AdminCredentials");
+        var adminEmail = adminConfig["Email"];
+        var adminPassword = adminConfig["Password"];
+        var adminUsername = adminConfig["Username"];
 
-            var createAdmin = await userManager.CreateAsync(admin, "Admin123!");
-            if (createAdmin.Succeeded)
+        if (string.IsNullOrEmpty(adminEmail))
+        {
+            logger.LogWarning("Admin email not configured in appsettings.json");
+        }
+        else if (string.IsNullOrEmpty(adminPassword) || adminPassword.Length < 12)
+        {
+            logger.LogError("Admin password must be at least 12 characters long");
+        }
+        else
+        {
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+            if (adminUser == null)
             {
-                await userManager.AddToRoleAsync(admin, "Admin");
+                var admin = new AppUser
+                {
+                    UserName = adminUsername ?? adminEmail.Split('@')[0],
+                    Email = adminEmail,
+                    EmailConfirmed = true,
+                    DisplayName = "Admin"
+                };
+
+                var createAdmin = await userManager.CreateAsync(admin, adminPassword);
+                if (createAdmin.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, "Admin");
+                    logger.LogInformation("Admin user created successfully");
+                }
+                else
+                {
+                    logger.LogError("Failed to create admin user: {Errors}",
+                        string.Join(", ", createAdmin.Errors.Select(e => e.Description)));
+                }
             }
         }
     }

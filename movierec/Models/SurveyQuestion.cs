@@ -6,5 +6,5 @@ public class SurveyQuestion
     public string Text { get; set; }
     public string[] Options { get; set; }
     public string FilterProperty { get; set; }
-    public bool IsMultipleChoice { get; set; } = true; // Променено на true за жанровете
+    public bool IsMultipleChoice { get; set; } = true; 
 }

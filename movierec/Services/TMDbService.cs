@@ -326,14 +326,12 @@ public class TMDbService
     {
         try
         {
-            // 1. Добавете API ключа към основната заявка
             var response = await _httpClient.GetAsync($"movie/{movieId}?api_key={_apiKey}&language=en-US");
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
             var movieDetails = JsonConvert.DeserializeObject<MovieDetails>(content);
 
-            // 2. Добавете API ключа и към заявката за credits
             var creditsResponse = await _httpClient.GetAsync($"movie/{movieId}/credits?api_key={_apiKey}");
             if (creditsResponse.IsSuccessStatusCode)
             {

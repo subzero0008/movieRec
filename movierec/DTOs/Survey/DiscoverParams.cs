@@ -7,13 +7,11 @@
         public string? WithKeywords { get; set; }
         public string SortBy { get; set; } = "popularity.desc";
 
-        // Ново: Добавени специфични параметри за вашия сценарий
         public string? Occasion { get; set; }
         public string? AgePreference { get; set; }
         public bool IsRatingImportant { get; set; }
         public List<string>? Themes { get; set; }
 
-        // Оригинални TMDb параметри (за обратна съвместимост)
         public int? PrimaryReleaseYear { get; set; }
         public double? MinVoteAverage { get; set; }
         public int? Page { get; set; }

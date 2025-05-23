@@ -3,122 +3,40 @@
   "WorkspaceRootPath": "D:\\NewFolder\\movierec\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\controllers\\pollcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:controllers\\pollcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\poll.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\poll.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\User\\AppData\\Local\\SourceServer\\c569fa4bdb67405e7126169f8af03b7a8ac4337b7b9ccb5c39d31efb71fb819c\\movierec\\Models\\AppUser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\pollmovie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\pollmovie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\services\\tmdbservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:services\\tmdbservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\dtos\\createpolldto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:dtos\\createpolldto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\pollvote.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\pollvote.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\services\\recommendationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:services\\recommendationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\data\\movierecdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:data\\movierecdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\controllers\\moviescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:controllers\\moviescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\appuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\appuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\favoritemovie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\favoritemovie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\processtvshowresults.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\processtvshowresults.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\recommendationrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\recommendationrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\responsemodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\responsemodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\showrating.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\showrating.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\surveyquestion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\surveyquestion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\tvshow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\tvshow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\watchedmovie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\watchedmovie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\watchedshow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\watchedshow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\movierating.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\movierating.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\moviedetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\moviedetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\futuredateattribute .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\futuredateattribute .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\favoriteshow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\favoriteshow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\approle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\approle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\migrations\\.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:migrations\\.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\services\\recommendationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:services\\recommendationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\models\\userpreferences.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:models\\userpreferences.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\User\\AppData\\Local\\SourceServer\\34cc29da92fec69b8937a61194439fe803ff76d81701e930bc8f3154bd55d364\\movierec\\Models\\MovieDetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\dtos\\registercinemadto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:dtos\\registercinemadto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\controllers\\movieratingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:controllers\\movieratingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\services\\surveyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:services\\surveyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|d:\\newfolder\\movierec\\controllers\\surveycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{80AA9742-C4CD-4437-ADB5-3FABD61FEAC1}|movierec.csproj|solutionrelative:controllers\\surveycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -128,7 +46,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -144,361 +62,113 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Poll.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\Poll.cs",
-              "RelativeDocumentMoniker": "Models\\Poll.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\Poll.cs",
-              "RelativeToolTip": "Models\\Poll.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T20:05:20.039Z",
-              "IsPinned": true
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "AppUser.cs",
-              "DocumentMoniker": "C:\\Users\\User\\AppData\\Local\\SourceServer\\c569fa4bdb67405e7126169f8af03b7a8ac4337b7b9ccb5c39d31efb71fb819c\\movierec\\Models\\AppUser.cs",
-              "ToolTip": "C:\\Users\\User\\AppData\\Local\\SourceServer\\c569fa4bdb67405e7126169f8af03b7a8ac4337b7b9ccb5c39d31efb71fb819c\\movierec\\Models\\AppUser.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-14T01:06:04.645Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "PollMovie.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\PollMovie.cs",
-              "RelativeDocumentMoniker": "Models\\PollMovie.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\PollMovie.cs",
-              "RelativeToolTip": "Models\\PollMovie.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAoAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T20:05:40.176Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "PollController.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Controllers\\PollController.cs",
-              "RelativeDocumentMoniker": "Controllers\\PollController.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Controllers\\PollController.cs",
-              "RelativeToolTip": "Controllers\\PollController.cs",
-              "ViewState": "AgIAALcAAAAAAAAAAAAiwMwAAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T20:07:25.257Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "MovieRecDbContext.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Data\\MovieRecDbContext.cs",
-              "RelativeDocumentMoniker": "Data\\MovieRecDbContext.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Data\\MovieRecDbContext.cs",
-              "RelativeToolTip": "Data\\MovieRecDbContext.cs",
-              "ViewState": "AgIAAEMAAAAAAAAAAAAwwFYAAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-17T00:45:31.599Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "CreatePollDto.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\DTOs\\CreatePollDto.cs",
-              "RelativeDocumentMoniker": "DTOs\\CreatePollDto.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\DTOs\\CreatePollDto.cs",
-              "RelativeToolTip": "DTOs\\CreatePollDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T20:08:06.9Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAwwBYAAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-17T00:30:49.837Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "RecommendationService.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Services\\RecommendationService.cs",
-              "RelativeDocumentMoniker": "Services\\RecommendationService.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Services\\RecommendationService.cs",
-              "RelativeToolTip": "Services\\RecommendationService.cs",
-              "ViewState": "AgIAANAAAAAAAAAAAAAkwNwAAAA2AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-12T13:28:51.612Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "TMDbService.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Services\\TMDbService.cs",
-              "RelativeDocumentMoniker": "Services\\TMDbService.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Services\\TMDbService.cs",
-              "RelativeToolTip": "Services\\TMDbService.cs",
-              "ViewState": "AgIAAEMBAAAAAAAAAAAgwFwBAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-09T14:22:56.635Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "PollVote.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\PollVote.cs",
-              "RelativeDocumentMoniker": "Models\\PollVote.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\PollVote.cs",
-              "RelativeToolTip": "Models\\PollVote.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAQAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T20:06:34.639Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "ProcessTVShowResults.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\ProcessTVShowResults.cs",
-              "RelativeDocumentMoniker": "Models\\ProcessTVShowResults.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\ProcessTVShowResults.cs",
-              "RelativeToolTip": "Models\\ProcessTVShowResults.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:52.56Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "AppUser.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\AppUser.cs",
-              "RelativeDocumentMoniker": "Models\\AppUser.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\AppUser.cs",
-              "RelativeToolTip": "Models\\AppUser.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAowCEAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-22T15:47:36.71Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "FavoriteMovie.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\FavoriteMovie.cs",
-              "RelativeDocumentMoniker": "Models\\FavoriteMovie.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\FavoriteMovie.cs",
-              "RelativeToolTip": "Models\\FavoriteMovie.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:27.129Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "MoviesController.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Controllers\\MoviesController.cs",
-              "RelativeDocumentMoniker": "Controllers\\MoviesController.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Controllers\\MoviesController.cs",
-              "RelativeToolTip": "Controllers\\MoviesController.cs",
-              "ViewState": "AgIAAGoAAAAAAAAAAAAIwJkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-02T00:23:20.134Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "RecommendationRequest.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\RecommendationRequest.cs",
-              "RelativeDocumentMoniker": "Models\\RecommendationRequest.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\RecommendationRequest.cs",
-              "RelativeToolTip": "Models\\RecommendationRequest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:51.415Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "ResponseModels.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\ResponseModels.cs",
-              "RelativeDocumentMoniker": "Models\\ResponseModels.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\ResponseModels.cs",
-              "RelativeToolTip": "Models\\ResponseModels.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:50.102Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "ShowRating.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\ShowRating.cs",
-              "RelativeDocumentMoniker": "Models\\ShowRating.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\ShowRating.cs",
-              "RelativeToolTip": "Models\\ShowRating.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:45.415Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "SurveyQuestion.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\SurveyQuestion.cs",
-              "RelativeDocumentMoniker": "Models\\SurveyQuestion.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\SurveyQuestion.cs",
-              "RelativeToolTip": "Models\\SurveyQuestion.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:44.743Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "TvShow.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\TvShow.cs",
-              "RelativeDocumentMoniker": "Models\\TvShow.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\TvShow.cs",
-              "RelativeToolTip": "Models\\TvShow.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:43.68Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "WatchedMovie.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\WatchedMovie.cs",
-              "RelativeDocumentMoniker": "Models\\WatchedMovie.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\WatchedMovie.cs",
-              "RelativeToolTip": "Models\\WatchedMovie.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:37.799Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "WatchedShow.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\WatchedShow.cs",
-              "RelativeDocumentMoniker": "Models\\WatchedShow.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\WatchedShow.cs",
-              "RelativeToolTip": "Models\\WatchedShow.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:36.857Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "MovieRating.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\MovieRating.cs",
-              "RelativeDocumentMoniker": "Models\\MovieRating.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\MovieRating.cs",
-              "RelativeToolTip": "Models\\MovieRating.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:34.334Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "FavoriteShow.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\FavoriteShow.cs",
-              "RelativeDocumentMoniker": "Models\\FavoriteShow.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\FavoriteShow.cs",
-              "RelativeToolTip": "Models\\FavoriteShow.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T18:19:30.407Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "FutureDateAttribute .cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\FutureDateAttribute .cs",
-              "RelativeDocumentMoniker": "Models\\FutureDateAttribute .cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\FutureDateAttribute .cs",
-              "RelativeToolTip": "Models\\FutureDateAttribute .cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-08T22:51:30.033Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "MovieDetails.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\MovieDetails.cs",
-              "RelativeDocumentMoniker": "Models\\MovieDetails.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\MovieDetails.cs",
-              "RelativeToolTip": "Models\\MovieDetails.cs",
-              "ViewState": "AgIAAKIAAAAAAAAAAAAAAMgAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-09T14:11:49.249Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 25,
               "Title": "AppRole.cs",
               "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\AppRole.cs",
               "RelativeDocumentMoniker": "Models\\AppRole.cs",
               "ToolTip": "D:\\NewFolder\\movierec\\Models\\AppRole.cs",
               "RelativeToolTip": "Models\\AppRole.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-01T00:44:44.942Z"
+              "WhenOpened": "2025-05-23T10:41:38.117Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": ".cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Migrations\\.cs",
-              "RelativeDocumentMoniker": "Migrations\\.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Migrations\\.cs",
-              "RelativeToolTip": "Migrations\\.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABJAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "AppUser.cs",
+              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\AppUser.cs",
+              "RelativeDocumentMoniker": "Models\\AppUser.cs",
+              "ToolTip": "D:\\NewFolder\\movierec\\Models\\AppUser.cs",
+              "RelativeToolTip": "Models\\AppUser.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAzwBkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T14:54:09.503Z"
+              "WhenOpened": "2025-05-23T10:41:24.203Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
-              "Title": "Movie.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\Movie.cs",
-              "RelativeDocumentMoniker": "Models\\Movie.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\Models\\Movie.cs",
-              "RelativeToolTip": "Models\\Movie.cs",
-              "ViewState": "AgIAADUAAAAAAAAAAAAmwAwAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 8,
+              "Title": "SurveyController.cs",
+              "DocumentMoniker": "D:\\NewFolder\\movierec\\Controllers\\SurveyController.cs",
+              "RelativeDocumentMoniker": "Controllers\\SurveyController.cs",
+              "ToolTip": "D:\\NewFolder\\movierec\\Controllers\\SurveyController.cs",
+              "RelativeToolTip": "Controllers\\SurveyController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-17T00:47:09.634Z"
+              "WhenOpened": "2025-05-23T00:16:15.957Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
-              "Title": "MovieDetails.cs",
-              "DocumentMoniker": "C:\\Users\\User\\AppData\\Local\\SourceServer\\34cc29da92fec69b8937a61194439fe803ff76d81701e930bc8f3154bd55d364\\movierec\\Models\\MovieDetails.cs",
-              "ToolTip": "C:\\Users\\User\\AppData\\Local\\SourceServer\\34cc29da92fec69b8937a61194439fe803ff76d81701e930bc8f3154bd55d364\\movierec\\Models\\MovieDetails.cs",
-              "ViewState": "AgIAAKQAAAAAAAAAAAAQwLgAAAAFAAAAAAAAAA==",
+              "DocumentIndex": 7,
+              "Title": "SurveyService.cs",
+              "DocumentMoniker": "D:\\NewFolder\\movierec\\Services\\SurveyService.cs",
+              "RelativeDocumentMoniker": "Services\\SurveyService.cs",
+              "ToolTip": "D:\\NewFolder\\movierec\\Services\\SurveyService.cs",
+              "RelativeToolTip": "Services\\SurveyService.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAAwA4BAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-08T20:06:10.984Z"
+              "WhenOpened": "2025-05-23T00:14:13.7Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
-              "Title": "RegisterCinemaDto.cs",
-              "DocumentMoniker": "D:\\NewFolder\\movierec\\DTOs\\RegisterCinemaDto.cs",
-              "RelativeDocumentMoniker": "DTOs\\RegisterCinemaDto.cs",
-              "ToolTip": "D:\\NewFolder\\movierec\\DTOs\\RegisterCinemaDto.cs",
-              "RelativeToolTip": "DTOs\\RegisterCinemaDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABSAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "TMDbService.cs",
+              "DocumentMoniker": "D:\\NewFolder\\movierec\\Services\\TMDbService.cs",
+              "RelativeDocumentMoniker": "Services\\TMDbService.cs",
+              "ToolTip": "D:\\NewFolder\\movierec\\Services\\TMDbService.cs",
+              "RelativeToolTip": "Services\\TMDbService.cs",
+              "ViewState": "AgIAADgAAAAAAAAAAAA3wFIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-01T14:37:39.113Z"
+              "WhenOpened": "2025-05-23T00:12:19.663Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "RecommendationService.cs",
+              "DocumentMoniker": "D:\\NewFolder\\movierec\\Services\\RecommendationService.cs",
+              "RelativeDocumentMoniker": "Services\\RecommendationService.cs",
+              "ToolTip": "D:\\NewFolder\\movierec\\Services\\RecommendationService.cs",
+              "RelativeToolTip": "Services\\RecommendationService.cs",
+              "ViewState": "AgIAAP8AAAAAAAAAAAAowA4BAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T00:06:04.11Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UserPreferences.cs",
+              "DocumentMoniker": "D:\\NewFolder\\movierec\\Models\\UserPreferences.cs",
+              "RelativeDocumentMoniker": "Models\\UserPreferences.cs",
+              "ToolTip": "D:\\NewFolder\\movierec\\Models\\UserPreferences.cs",
+              "RelativeToolTip": "Models\\UserPreferences.cs",
+              "ViewState": "AgIAAFEAAAAAAAAAAAAAAA4AAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T23:58:30.179Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MovieRatingsController.cs",
+              "DocumentMoniker": "D:\\NewFolder\\movierec\\Controllers\\MovieRatingsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\MovieRatingsController.cs",
+              "ToolTip": "D:\\NewFolder\\movierec\\Controllers\\MovieRatingsController.cs",
+              "RelativeToolTip": "Controllers\\MovieRatingsController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAEQCAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T23:43:45.715Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AccountController.cs",
+              "DocumentMoniker": "D:\\NewFolder\\movierec\\Controllers\\AccountController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AccountController.cs",
+              "ToolTip": "D:\\NewFolder\\movierec\\Controllers\\AccountController.cs",
+              "RelativeToolTip": "Controllers\\AccountController.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAA1wGYAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T23:37:36.673Z"
             }
           ]
         },

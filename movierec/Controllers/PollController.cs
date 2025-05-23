@@ -169,7 +169,6 @@ public class PollController : ControllerBase
             Results = results
         });
     }
-
     [HttpGet("active")]
     [AllowAnonymous]
     public async Task<IActionResult> GetActivePolls()
@@ -179,10 +178,10 @@ public class PollController : ControllerBase
             .Where(p => p.StartDate <= now && p.EndDate >= now)
             .Include(p => p.Movies)
             .Join(
-                _context.Users,  // Join with the Users table
-                poll => poll.CreatedByUserId,  // Poll's CreatedByUserId
-                user => user.Id,  // User's Id
-                (poll, user) => new  // Result selector
+                _context.Users,
+                poll => poll.CreatedByUserId,
+                user => user.Id,
+                (poll, user) => new
                 {
                     Poll = poll,
                     CinemaUser = user
@@ -195,6 +194,7 @@ public class PollController : ControllerBase
                 x.Poll.StartDate,
                 x.Poll.EndDate,
                 x.Poll.IsActive,
+                createdByUserId = x.Poll.CreatedByUserId, // Добавено ново поле
                 Movies = x.Poll.Movies.Select(m => new
                 {
                     m.Id,
@@ -211,5 +211,104 @@ public class PollController : ControllerBase
             .ToListAsync();
 
         return Ok(polls);
+    }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdatePoll(int id, [FromBody] UpdatePollDto dto)
+    {
+        var poll = await _context.Polls
+            .Include(p => p.Movies)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (poll == null)
+        {
+            return NotFound("Poll not found");
+        }
+
+        // Проверка дали текущият потребител е създател на анкетата или е Admin
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (poll.CreatedByUserId != currentUserId && !User.IsInRole("Admin"))
+        {
+            return Forbid();
+        }
+
+        // Основна информация за анкетата
+        poll.Title = dto.Title ?? poll.Title;
+        poll.Description = dto.Description ?? poll.Description;
+        poll.StartDate = dto.StartDate ?? poll.StartDate;
+        poll.EndDate = dto.EndDate ?? poll.EndDate;
+
+        // Ако има нови филми
+        if (dto.MovieIds != null && dto.MovieIds.Any())
+        {
+            // Проверка дали има гласувания - ако има, не позволяваме промяна на филмите
+            var hasVotes = await _context.PollVotes.AnyAsync(v => v.PollId == id);
+            if (hasVotes)
+            {
+                return BadRequest("Cannot change movies after votes have been cast");
+            }
+
+            // Изтриване на старите филми
+            _context.PollMovies.RemoveRange(poll.Movies);
+
+            // Добавяне на новите филми
+            foreach (var movieId in dto.MovieIds)
+            {
+                var movieDetails = await _tmdbService.GetMovieDetailsAsync(movieId);
+                if (movieDetails == null)
+                {
+                    return NotFound($"Movie with ID {movieId} not found in TMDB");
+                }
+
+                poll.Movies.Add(new PollMovie
+                {
+                    TmdbMovieId = movieId,
+                    Title = movieDetails.Title,
+                    PosterPath = movieDetails.PosterPath
+                });
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok(poll);
+    }
+
+    [Authorize(Roles = "Cinema,Admin")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePoll(int id)
+    {
+        var poll = await _context.Polls
+            .Include(p => p.Movies)
+            .ThenInclude(m => m.Votes)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (poll == null)
+        {
+            return NotFound("Poll not found");
+        }
+
+        // Проверка дали текущият потребител е създател на анкетата или е Admin
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (poll.CreatedByUserId != currentUserId && !User.IsInRole("Admin"))
+        {
+            return Forbid();
+        }
+
+        // Изтриване на всички гласове, свързани с анкетата
+        var votes = poll.Movies.SelectMany(m => m.Votes).ToList();
+        if (votes.Any())
+        {
+            _context.PollVotes.RemoveRange(votes);
+        }
+
+        // Изтриване на филмите от анкетата
+        _context.PollMovies.RemoveRange(poll.Movies);
+
+        // Накрая изтриваме самата анкета
+        _context.Polls.Remove(poll);
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }

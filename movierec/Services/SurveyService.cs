@@ -17,11 +17,11 @@ namespace MovieRec.Services
         private readonly ILogger<SurveyService> _logger;
         private static readonly Dictionary<string, int> _themeKeywordIds = new()
         {
-            ["Based on Book"] = 818,         // Потвърдено: Филми по книги
-            ["Classic Cinema"] = 2796,       // Потвърдено: Класически филми (преди 1970)
-            ["True Story"] = 971,            // Потвърдено: Вдъхновени от истински събития
-            ["Biographical"] = 968,          // Потвърдено: Биографични филми
-            ["Superhero Movies"] = 1803      // Потвърдено: Супергеройски филми (Marvel/DC)
+            ["Based on Book"] = 818,         
+            ["Classic Cinema"] = 2796,      
+            ["True Story"] = 971,            
+            ["Biographical"] = 968,          
+            ["Superhero Movies"] = 1803      
         };
 
         private static readonly Dictionary<int, string> _genreMappings = new()

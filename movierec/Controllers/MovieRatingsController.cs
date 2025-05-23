@@ -4,10 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieRecAPI.Data;
 using movierec.Models;
-using movierec.DTOs;
 using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
 using System.Globalization;
 
