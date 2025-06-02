@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
+import Swal from 'sweetalert2';
+
 
 export default function ReviewsList({ movieId }) {
   const [reviews, setReviews] = useState([]);
@@ -83,43 +85,56 @@ export default function ReviewsList({ movieId }) {
 
 
   const handleDelete = async (reviewId) => {
-    if (!window.confirm('Сигурни ли сте?')) return;
-    
-    // Проверка дали movieId е валидно
-    if (!movieId) {
-      console.error('movieId е невалиден!');
-      setError('movieId е невалиден!');
-      return;
-    }
-  
-    try {
-      const response = await fetch(`https://localhost:7115/api/movieratings/${movieId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Грешка при изтриване');
-      }
-      
-      fetchReviews();
-    } catch (err) {
-      console.error(err);
-      setError(err.message);
-    }
-  };
+  const result = await Swal.fire({
+    title: 'Are u sure',
+    text: "This action cannot be Reverted",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Delete',
+    cancelButtonText: 'Cancel',
+    customClass: {
+      confirmButton: 'bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded',
+      cancelButton: 'bg-gray-300 text-black hover:bg-gray-400 px-4 py-2 rounded ml-2',
+    },
+    buttonsStyling: false
+  });
 
-  if (loading) return <div className="text-white py-4">Зареждане на ревюта...</div>;
-  if (error) return <div className="text-red-500 py-4">Грешка: {error}</div>;
-  if (reviews.length === 0) return <div className="text-gray-400 py-4">Няма ревюта все още</div>;
+  if (!result.isConfirmed) return;
+
+  if (!movieId) {
+    console.error('Invalid movie ID');
+    setError('Invalid movie ID');
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://localhost:7115/api/movieratings/${movieId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error while deleting');
+    }
+
+    fetchReviews(); // Презарежда отзивите
+  } catch (err) {
+    console.error(err);
+    setError(err.message);
+  }
+};
+
+  if (loading) return <div className="text-white py-4">LoadingReviews...</div>;
+  if (error) return <div className="text-red-500 py-4">Error: {error}</div>;
+  if (reviews.length === 0) return <div className="text-gray-400 py-4">No Reviews Yet</div>;
 
   return (
     <div className="space-y-6 mt-6">
       <h3 className="text-2xl font-bold text-white">
-        Потребителски ревюта ({reviews.length})
+        Users Reviews ({reviews.length})
       </h3>
 
       {reviews.map((review) => {
@@ -139,7 +154,7 @@ export default function ReviewsList({ movieId }) {
               </span>
             </div>
 
-            <p className="text-white text-lg mb-2">{review.review || "Няма предоставен текст"}</p>
+            <p className="text-white text-lg mb-2">{review.review || "No comments added"}</p>
 
             {isOwner && (
               <div className="flex gap-2 mt-3">
@@ -155,14 +170,14 @@ export default function ReviewsList({ movieId }) {
                   }}
                   className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition"
                 >
-                  Редактирай
+                  Edit
                 </button>
 
                 <button
   onClick={() => handleDelete(movieId)} // Пращаме movieId от пропс
   className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded transition"
 >
-  Изтрий
+  Delete
 </button>
               </div>
             )}
@@ -173,10 +188,10 @@ export default function ReviewsList({ movieId }) {
       {editingReview && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-gray-800 p-6 rounded-lg w-full max-w-md">
-            <h3 className="text-xl font-bold text-white mb-4">Редактиране на ревю</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Edit rating</h3>
             <form onSubmit={handleEditSubmit}>
               <div className="mb-4">
-                <label className="block text-white mb-2">Рейтинг:</label>
+                <label className="block text-white mb-2">Rating:</label>
                 <select
                   value={editForm.rating}
                   onChange={(e) => setEditForm({ ...editForm, rating: e.target.value })}
@@ -188,7 +203,7 @@ export default function ReviewsList({ movieId }) {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-white mb-2">Ревю:</label>
+                <label className="block text-white mb-2">Review:</label>
                 <textarea
                   value={editForm.review}
                   onChange={(e) => setEditForm({ ...editForm, review: e.target.value })}
@@ -202,13 +217,13 @@ export default function ReviewsList({ movieId }) {
                   onClick={() => setEditingReview(null)}
                   className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded"
                 >
-                  Откажи
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
                 >
-                  Запази
+                  Save
                 </button>
               </div>
             </form>

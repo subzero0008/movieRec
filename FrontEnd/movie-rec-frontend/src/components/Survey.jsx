@@ -105,7 +105,7 @@ const Survey = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-900">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-lg font-medium text-white">Зареждане на анкетата...</p>
+          <p className="mt-4 text-lg font-medium text-white">Loading the poll...</p>
         </div>
       </div>
     );
@@ -115,13 +115,13 @@ const Survey = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-900">
         <div className="bg-red-900 bg-opacity-80 border-l-4 border-red-500 text-red-100 p-4 max-w-md mx-4 rounded">
-          <p className="font-bold">Грешка</p>
+          <p className="font-bold">Error</p>
           <p>{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
           >
-            Опитай отново
+            Try Again
           </button>
         </div>
       </div>
@@ -133,9 +133,9 @@ const Survey = () => {
       <div className="max-w-md mx-auto bg-gray-800 rounded-xl shadow-lg overflow-hidden md:max-w-2xl border border-gray-700">
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-white">Какъв филм да гледаме?</h1>
+            <h1 className="text-2xl font-bold text-white">What Movie Should I Watch?</h1>
             <span className="text-sm text-gray-400">
-              Въпрос {currentStep + 1} от {questions.length}
+              Question {currentStep + 1} от {questions.length}
             </span>
           </div>
 
@@ -217,7 +217,7 @@ const Survey = () => {
                     : 'bg-gray-700 text-white hover:bg-gray-600'
                 } transition-colors`}
               >
-                Назад
+                Back
               </button>
 
               {currentStep < questions.length - 1 ? (
@@ -237,7 +237,7 @@ const Survey = () => {
                       : 'bg-blue-600 hover:bg-blue-500'
                   } transition-colors`}
                 >
-                  Напред
+                  Next
                 </button>
               ) : (
                 <button
@@ -249,7 +249,7 @@ const Survey = () => {
                       : 'bg-blue-600 hover:bg-blue-500'
                   } transition-colors`}
                 >
-                  {isSubmitting ? 'Изпращане...' : 'Получи препоръки'}
+                  {isSubmitting ? 'Sending...' : 'Get recomendations'}
                 </button>
               )}
             </div>

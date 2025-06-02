@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { login } from './services/authService';
-import { jwtDecode } from 'jwt-decode';
+import { login as apiLogin } from './services/authService';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -32,24 +31,26 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      const response = await login(formData.identifier, formData.password);
+      const response = await apiLogin(formData.identifier, formData.password);
+      console.log('Login response:', response);
 
-      // Ако id идва от response.user, сетваме го директно
-      const user = response.user;
-      const token = response.token;
+      if (!response || !response.token) {
+        throw new Error('Невалиден отговор от сървъра');
+      }
 
-      authLogin({
-        id: user.id,
-        username: user.userName,
-        email: user.email,
-        token
-      });
+      // Подготвяме данните за authLogin
+      const loginData = {
+        token: response.token,
+        user: response.user || null // Ако user данни се връщат отделно
+      };
 
+      authLogin(loginData);
       navigate('/');
     } catch (err) {
+      console.error('Login error:', err);
       const errorMessage = err.response?.data?.message || 
-                           err.message || 
-                           'Грешка при влизане. Моля опитайте отново.';
+                         err.message || 
+                         'Грешка при влизане. Моля опитайте отново.';
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -58,11 +59,11 @@ const Login = () => {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-gray-800 rounded-lg">
-      <h2 className="text-2xl font-bold text-white mb-6">Вход</h2>
+      <h2 className="text-2xl font-bold text-white mb-6">Log In</h2>
       {error && <div className="mb-4 p-2 bg-red-500 text-white rounded">{error}</div>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-white mb-2">Имейл или потребителско име:</label>
+          <label className="block text-white mb-2">Email or Username</label>
           <input
             type="text"
             name="identifier"
@@ -73,7 +74,7 @@ const Login = () => {
           />
         </div>
         <div>
-          <label className="block text-white mb-2">Парола:</label>
+          <label className="block text-white mb-2">Password:</label>
           <input
             type="password"
             name="password"
@@ -93,9 +94,9 @@ const Login = () => {
         </button>
       </form>
       <p className="mt-4 text-white">
-        Нямате акаунт?{' '}
+        Don't have acount yet?{' '}
         <a href="/register" className="text-blue-400 hover:underline">
-          Регистрирайте се
+   Register
         </a>
       </p>
     </div>

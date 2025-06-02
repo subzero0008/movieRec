@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
+
 
 
 const Profile = () => {
@@ -60,30 +63,46 @@ const Profile = () => {
     fetchUserRatings();
   }, [user]);
   
-  const handleDeleteRating = async (movieId) => {
-    if (window.confirm('Сигурни ли сте, че искате да изтриете този рейтинг?')) {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115/api'}/MovieRatings/${movieId}`,
-          {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${user.token}`
-            }
-          }
-        );
-        
-        if (response.ok) {
-          setRatings(ratings.filter(rating => rating.movieId !== movieId));
-        } else {
-          throw new Error('Failed to delete rating');
+
+const handleDeleteRating = async (movieId) => {
+  const result = await Swal.fire({
+    title: 'Are u sure?',
+    text: 'Do you really want to delete that rating',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Delete!',
+    cancelButtonText: 'Cancel',
+    customClass: {
+      confirmButton: 'bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded',
+      cancelButton: 'bg-gray-300 text-black hover:bg-gray-400 px-4 py-2 rounded ml-2',
+    },
+    buttonsStyling: false
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115/api'}/MovieRatings/${movieId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${user.token}`
         }
-      } catch (err) {
-        console.error('Error deleting rating:', err);
-        setError('Failed to delete rating. Please try again.');
       }
+    );
+
+    if (response.ok) {
+      setRatings(prev => prev.filter(rating => rating.movieId !== movieId));
+    } else {
+      throw new Error('Failed to delete rating');
     }
-  };
+  } catch (err) {
+    console.error('Error deleting rating:', err);
+    setError('Failed to delete rating. Please try again.');
+  }
+};
+
 
   const handleSaveUsernameChange = async () => {
     try {
@@ -151,12 +170,12 @@ const Profile = () => {
     return (
       <div className="max-w-md mx-auto mt-10 p-8 bg-gray-800 rounded-xl shadow-lg text-center">
         <h2 className="text-3xl font-bold mb-6 text-blue-400">Профил</h2>
-        <p className="mb-6 text-gray-300">Трябва да влезете в профила си, за да видите тази страница.</p>
+        <p className="mb-6 text-gray-300">You must be logged in to see this page.</p>
         <Link 
           to="/login" 
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200 inline-block"
         >
-          Вход
+          Login
         </Link>
       </div>
     );
@@ -167,28 +186,28 @@ const Profile = () => {
       <div className="bg-gray-800 rounded-xl shadow-xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6">
-          <h2 className="text-3xl font-bold text-white">Профил</h2>
-          <p className="text-blue-100">Добре дошли, {user.username}!</p>
+          <h2 className="text-3xl font-bold text-white">Profile</h2>
+          <p className="text-blue-100">Welcome, {user.username}!</p>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-6">
           {/* User Info Section */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-gray-700 rounded-lg p-6 shadow">
-              <h3 className="text-xl font-semibold mb-4 text-blue-400 border-b border-gray-600 pb-2">Информация</h3>
+              <h3 className="text-xl font-semibold mb-4 text-blue-400 border-b border-gray-600 pb-2">Information</h3>
               
               <div className="space-y-6">
                 {/* Username Section */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium text-gray-300">Потребителско име:</span>
+                    <span className="font-medium text-gray-300">Username:</span>
                     <span className="font-semibold">{user.username}</span>
                   </div>
                   
                   {editUsername ? (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1">Ново потребителско име</label>
+                        <label className="block text-sm text-gray-400 mb-1">New username</label>
                         <input 
                           type="text" 
                           value={username}
@@ -197,7 +216,7 @@ const Profile = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1">Текуща парола</label>
+                        <label className="block text-sm text-gray-400 mb-1">Current Password</label>
                         <input 
                           type="password" 
                           value={currentPassword}
@@ -210,13 +229,13 @@ const Profile = () => {
                           onClick={handleSaveUsernameChange}
                           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
                         >
-                          Запази
+                          Save
                         </button>
                         <button
                           onClick={() => setEditUsername(false)}
                           className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
                         >
-                          Отказ
+                          Cancel
                         </button>
                       </div>
                     </div>
@@ -225,7 +244,7 @@ const Profile = () => {
                       onClick={() => setEditUsername(true)}
                       className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 mt-2"
                     >
-                      Редактирай име
+                      Edit name
                     </button>
                   )}
                 </div>
@@ -235,7 +254,7 @@ const Profile = () => {
                   {editPassword ? (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1">Нова парола</label>
+                        <label className="block text-sm text-gray-400 mb-1">New password</label>
                         <input 
                           type="password" 
                           value={newPassword}
@@ -244,7 +263,7 @@ const Profile = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1">Текуща парола</label>
+                        <label className="block text-sm text-gray-400 mb-1">Current password</label>
                         <input 
                           type="password" 
                           value={currentPassword}
@@ -257,13 +276,13 @@ const Profile = () => {
                           onClick={handleSavePasswordChange}
                           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
                         >
-                          Запази
+                          Save
                         </button>
                         <button
                           onClick={() => setEditPassword(false)}
                           className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
                         >
-                          Отказ
+                          Cancel
                         </button>
                       </div>
                     </div>
@@ -272,7 +291,7 @@ const Profile = () => {
                       onClick={() => setEditPassword(true)}
                       className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
                     >
-                      Смяна на парола
+                      Change password
                     </button>
                   )}
                 </div>
@@ -285,7 +304,7 @@ const Profile = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
                   </svg>
-                  Изход
+                  Log out
                 </button>
               </div>
             </div>
@@ -295,12 +314,12 @@ const Profile = () => {
           <div className="lg:col-span-3">
             <div className="bg-gray-700 rounded-lg p-6 shadow">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-semibold text-blue-400">Вашите рейтинги</h3>
+                <h3 className="text-xl font-semibold text-blue-400">Your Ratings</h3>
                 <Link 
                   to="/" 
                   className="text-sm bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded-lg transition duration-200"
                 >
-                  Добави нов рейтинг
+                  Add new rating
                 </Link>
               </div>
               
@@ -325,12 +344,12 @@ const Profile = () => {
     <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
-    <p className="text-lg text-gray-400 mb-4">Все още нямате добавени рейтинги.</p>
+    <p className="text-lg text-gray-400 mb-4">You don't have ratings yet.</p>
     <Link 
       to="/" 
       className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200"
     >
-      Прегледайте филми
+      Discover Movies
     </Link>
   </div>
 ) : (

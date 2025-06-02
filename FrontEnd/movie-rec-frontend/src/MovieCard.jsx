@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 
-const MovieCard = ({ movie, showRecommendationBadge = false }) => {
-  // Форматиране на датата за по-добро четене
+const MovieCard = ({ movie, showRecommendationBadge = false, showBothRatings = false }) => {
+  // Format date for better readability
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Показване на топ 2 жанра
+  // Show top 2 genres
   const displayGenres = movie.mainGenres?.slice(0, 2).join(' • ') || '';
 
   return (
@@ -16,7 +16,7 @@ const MovieCard = ({ movie, showRecommendationBadge = false }) => {
       to={`/movies/${movie.id}`} 
       className="block transform transition-transform duration-300 hover:scale-105 relative"
     >
-      {/* Badge за препоръки (ако е активиран) */}
+      {/* Recommendation badge (if enabled) */}
       {showRecommendationBadge && movie.relevanceScore && (
         <div className="absolute top-2 right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
           {Math.round(movie.relevanceScore * 100)}% Match
@@ -34,6 +34,7 @@ const MovieCard = ({ movie, showRecommendationBadge = false }) => {
               e.target.className = 'w-full h-80 object-cover bg-gray-700';
             }}
           />
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent h-20"></div>
         </div>
 
         <div className="p-4 flex-grow">
@@ -53,16 +54,33 @@ const MovieCard = ({ movie, showRecommendationBadge = false }) => {
             </p>
           )}
 
+          {/* TMDB Rating (always shown) */}
           <div className="flex items-center mt-2">
-            <span className="text-yellow-400 mr-1">⭐</span>
-            <span className="text-yellow-400">
-              {movie.voteAverage?.toFixed(1) || 'N/A'}/10
-            </span>
-          </div>
+  <span className="text-yellow-400 mr-1">⭐</span>
+  <span className="text-yellow-400">
+    {movie.tmdbRating !== undefined ? movie.tmdbRating.toFixed(1) : 
+     movie.voteAverage !== undefined ? movie.voteAverage.toFixed(1) : 'N/A'}/10
+  </span>
+  <span className="text-gray-400 text-xs ml-1">TMDB</span>
+</div>
+          {/* Local Rating (only shown if showBothRatings is true) */}
+          {showBothRatings && movie.localRating && (
+            <div className="flex items-center mt-1">
+              <span className="text-blue-400 mr-1">★</span>
+              <span className="text-blue-400">
+                {movie.localRating?.toFixed(1)}/5
+              </span>
+              {movie.ratingCount && (
+                <span className="text-gray-400 text-xs ml-1">
+                  ({movie.ratingCount} {movie.ratingCount === 1 ? 'rating' : 'ratings'})
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Link>
-  );з
+  );
 };
 
 export default MovieCard;

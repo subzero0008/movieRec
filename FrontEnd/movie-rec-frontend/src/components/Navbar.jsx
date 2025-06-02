@@ -71,7 +71,8 @@ export default function Navbar() {
   };
   return (
     <nav className="bg-gradient-to-r from-gray-900 to-blue-900 text-white shadow-xl">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"></div>
+
       <div className="flex items-center justify-between h-16">
         {/* Logo and main navigation */}
         <div className="flex items-center">
@@ -92,102 +93,109 @@ export default function Navbar() {
             </svg>
             <span className="ml-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-200">
               FilmSense
+              
             </span>
+            
           </Link>
   
-          {/* Desktop Navigation */}
-          <div className="hidden md:block ml-10">
-            <div className="flex items-baseline space-x-4">
-              <Link
-                to="/"
-                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300"
-              >
-                Начало
-              </Link>
-              <Link
-                to="/movies"
-                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300"
-              >
-    Филми
+{/* Desktop Navigation */}
+<div className="hidden md:flex items-center flex-1">
+  {/* Линкове отляво */}
+  <div className="flex items-center space-x-4"> {/* Променено от items-baseline на items-center */}
+    <Link to="/" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300">
+      Home
+    </Link>
+    <Link to="/movies" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300">
+      Movies
     </Link>
     {user && (
       <>
-        <Link
-                      to="/tv"
-                      className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-blue-700"
-                    >
+        <Link to="/tv" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-blue-700">
           TV Series
         </Link>
         <Link
+          to="/polls/active"
+          className="px-3 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white transition-all duration-300 shadow-md hover:shadow-lg flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Vote
+        </Link>
+        <Link
           to="/recommendations"
-          className="px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-500 text-white transition duration-300"
+          className="px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-500 text-white transition duration-300 flex items-center"
           title={user.ratedMoviesCount < 10 ? "Трябва да оцените поне 10 филма за препоръки" : ""}
         >
-                    Топ 10 Предложения
-                    {user.ratedMoviesCount >= 10 && (
-                      <span className="ml-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-yellow-100 bg-yellow-700 rounded-full">
-                        New
-                      </span>
-                    )}
-                  </Link>
-                  <Link
-      to="/survey"
-      className="px-3 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transition-all duration-300 shadow-md hover:shadow-lg"
+          <span className="flex items-center">
+           Top 10 recommendations
+            {user.ratedMoviesCount >= 10 && (
+              <span className="ml-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-yellow-100 bg-yellow-700 rounded-full">
+                New
+              </span>
+            )}
+          </span>
+        </Link>
+      </>
+    )}
+  </div>
+{/* Search Bar в средата */}
+<div className="mx-4 flex-1 max-w-xl">
+  <form onSubmit={handleSearch} className="relative">
+    <input
+      type="text"
+      ref={searchInputRef}
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder="Search movie..."
+      className="w-full py-2 pl-4 pr-10 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+    />
+    <button
+      type="submit"
+      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-400 hover:text-yellow-200"
+      disabled={isSearching}
     >
-      <div className="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        Анкета
-        <span className="ml-1.5 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-green-100 bg-green-700 rounded-full animate-pulse">
-          NEW
-        </span>
-      </div>
-    </Link>
-  </>
-              )}
-            </div>
-          </div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.65 6.15z"
+        />
+      </svg>
+    </button>
+  </form>
+</div>
+
+{/* Линкове отдясно */}
+<div className="flex items-baseline space-x-4">
+  {user && (
+    <>
+      <Link
+        to="/survey"
+        className="px-3 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transition-all duration-300 shadow-md hover:shadow-lg"
+      >
+        <div className="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Poll
+          <span className="ml-1.5 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-green-100 bg-green-700 rounded-full animate-pulse">
+            NEW
+          </span>
         </div>
+      </Link>
+    </>
+  )}
+</div>
+</div>
 
-
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:block mx-4 flex-1 max-w-md">
-            <form onSubmit={handleSearch} className="relative">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Търсене на филми..."
-                className="w-full px-4 py-2 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 pl-10"
-              />
-              <button
-                type="submit"
-                disabled={isSearching}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-yellow-400"
-              >
-                {isSearching ? (
-                  <svg className="animate-spin h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                )}
-              </button>
-              <div className="absolute right-10 top-1/2 transform -translate-y-1/2 hidden md:block">
-                <kbd className="px-2 py-1 text-xs rounded bg-gray-600 text-gray-300">Ctrl+K</kbd>
-              </div>
-            </form>
-          </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
@@ -260,32 +268,77 @@ export default function Navbar() {
                       </svg>
                     </button>
                   </div>
+{/* Profile dropdown */}
+{isProfileOpen && (
+  <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1 bg-white dark:bg-gray-800 ring-1 ring-black dark:ring-gray-600 ring-opacity-5 focus:outline-none z-50">
+    {/* Административни функции (видими само за админи) */}
+    {user?.role === 'Admin' && (
+      <>
+        <Link
+          to="/admin/users"
+          onClick={() => setIsProfileOpen(false)}
+          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-200"
+        >
+          Manage Useres
+        </Link>
+        <Link
+          to="/admin/reviews"
+          onClick={() => setIsProfileOpen(false)}
+          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-200"
+        >
+          Manage Reviews
+        </Link>
+        <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+      </>
+    )}
 
-                  {/* Profile dropdown */}
-                  {isProfileOpen && (
-                    <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                      <Link
-                        to="/profile"
-                        onClick={() => setIsProfileOpen(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 transition duration-200"
-                      >
-                        Профил
-                      </Link>
-                      <Link
-                        to="/watched"
-                        onClick={() => setIsProfileOpen(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 transition duration-200"
-                      >
-                        Гледани филми
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 transition duration-200"
-                      >
-                        Изход
-                      </button>
-                    </div>
-                  )}
+    {/* Функции за Cinema */}
+    {user?.role === 'Cinema' && (
+      <Link
+        to="/polls/create"
+        onClick={() => setIsProfileOpen(false)}
+        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-200"
+      >
+        Create Poll
+      </Link>
+    )}
+
+    {/* Общи функции за всички логнати потребители */}
+    <Link
+      to="/top-rated"
+      onClick={() => setIsProfileOpen(false)}
+      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-200"
+    >
+      Top Ratings
+    </Link>
+    <Link
+      to="/profile"
+      onClick={() => setIsProfileOpen(false)}
+      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-200"
+    >
+      Profile
+    </Link>
+    <Link
+      to="/watched"
+      onClick={() => setIsProfileOpen(false)}
+      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-200"
+    >
+      Watched movies
+    </Link>
+
+    {/* Разделителна линия */}
+    <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+
+    {/* Бутон за изход */}
+    <button
+      onClick={handleLogout}
+      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-200"
+    >
+      Log Out
+    </button>
+  </div>
+)}
+
                 </div>
               ) : (
                 <div className="flex space-x-4">
@@ -293,13 +346,13 @@ export default function Navbar() {
                     to="/login"
                     className="px-3 py-2 rounded-md text-sm font-medium bg-blue-700 hover:bg-blue-600 text-white transition duration-300"
                   >
-                    Вход
+                    Log in
                   </Link>
                   <Link
                     to="/register"
                     className="px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-500 text-white transition duration-300"
                   >
-                    Регистрация
+                    Register
                   </Link>
                 </div>
               )}
@@ -352,14 +405,14 @@ export default function Navbar() {
               className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-blue-700"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Начало
+              Home
             </Link>
             <Link
               to="/movies"
               className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-blue-700"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Филми
+              Movies
             </Link>
             {user && (
               <Link
@@ -367,7 +420,7 @@ export default function Navbar() {
                 className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-blue-700"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Списък
+                List
               </Link>
             )}
           </div>
@@ -390,14 +443,14 @@ export default function Navbar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block px-3 py-2 rounded-md text-base font-medium text-blue-200 hover:text-white hover:bg-blue-700"
                   >
-                    Профил
+                    Profile
                   </Link>
                   <Link
                     to="/watched"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block px-3 py-2 rounded-md text-base font-medium text-blue-200 hover:text-white hover:bg-blue-700"
                   >
-                    Гледани филми
+                    Watched Movies
                   </Link>
                   <button
                     onClick={() => {
@@ -406,7 +459,7 @@ export default function Navbar() {
                     }}
                     className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-200 hover:text-white hover:bg-blue-700"
                   >
-                    Изход
+                    Log out
                   </button>
                 </div>
               </>
@@ -417,14 +470,14 @@ export default function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-200 hover:text-white hover:bg-blue-700"
                 >
-                  Вход
+                  Log in
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-200 hover:text-white hover:bg-blue-700"
                 >
-                  Регистрация
+                  Register
                 </Link>
               </div>
             )}

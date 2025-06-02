@@ -68,11 +68,11 @@ function MovieDetail() {
 
   const handleWatchedClick = async () => {
     if (!user?.token) {
-      setWatchedError('Трябва да сте влезли в профила си');
+      setWatchedError('Ypu must be logged in');
       return;
     }
     if (!id) {
-      setWatchedError('Липсва ID на филма');
+      setWatchedError('Id is missing');
       return;
     }
 
@@ -81,7 +81,7 @@ function MovieDetail() {
 
     try {
       const movieId = parseInt(id);
-      if (isNaN(movieId)) throw new Error('Невалиден формат на ID на филма');
+      if (isNaN(movieId)) throw new Error('Invalid format of the Id');
 
       if (isWatched) {
         await removeFromWatched(movieId, user.token);
@@ -128,7 +128,7 @@ function MovieDetail() {
               {movie.title}
               {isWatched && (
                 <span className="ml-3 text-yellow-400 text-sm align-middle bg-yellow-900 bg-opacity-50 px-2 py-1 rounded-full">
-                  Гледан
+                  Watched
                 </span>
               )}
             </h1>
@@ -155,11 +155,11 @@ function MovieDetail() {
                 } text-white transition-colors`}
               >
                 {isWatchedLoading ? (
-                  <span>Зареждане...</span>
+                  <span>Loading...</span>
                 ) : (
                   <>
                     {isWatched ? <FaEyeSlash /> : <FaEye />}
-                    <span>{isWatched ? 'Премахни от гледани' : 'Добави в гледани'}</span>
+                    <span>{isWatched ? 'Remove from "watched list' : 'Add to Watched List'}</span>
                   </>
                 )}
               </button>
@@ -170,14 +170,14 @@ function MovieDetail() {
            {/* NEW SECTION: Genres, Director, Main Cast */}
 <div className="space-y-4 mt-6">
   <p className="text-white">
-    <span className="font-semibold">Жанрове:</span>{' '}
+    <span className="font-semibold">Genres:</span>{' '}
     {movie.genres && movie.genres.length > 0
       ? movie.genres.map(g => g.name).join(', ')
       : 'N/A'}
   </p>
 
   <div className="text-white">
-    <span className="font-semibold block mb-2">Режисьор:</span>
+    <span className="font-semibold block mb-2">Director:</span>
     {movie.credits?.crew ? (
       <>
         {movie.credits.crew
@@ -203,7 +203,7 @@ function MovieDetail() {
   </div>
 
   <div className="text-white">
-    <span className="font-semibold block mb-2">Главни актьори:</span>
+    <span className="font-semibold block mb-2">Main Crew:</span>
     {movie.credits?.cast && movie.credits.cast.length > 0 ? (
       <div className="flex flex-wrap gap-4">
         {movie.credits.cast.slice(0, 6).map((actor, index) => (

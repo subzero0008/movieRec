@@ -26,7 +26,7 @@ export default function WatchedButton({ tmdbMovieId, movieTitle, posterPath }) {
 
   const handleClick = async () => {
     if (!user?.token) {
-      setError('Трябва да сте влезли в профила си');
+      setError('You must be logged in');
       return;
     }
 
@@ -41,7 +41,7 @@ export default function WatchedButton({ tmdbMovieId, movieTitle, posterPath }) {
       }
       setIsWatched(!isWatched);
     } catch (err) {
-      setError(err.response?.data?.message || 'Грешка при изпълнение');
+      setError(err.response?.data?.message || 'Error in proceeding');
       console.error('Error:', err);
     } finally {
       setLoading(false);
@@ -62,7 +62,7 @@ export default function WatchedButton({ tmdbMovieId, movieTitle, posterPath }) {
         ) : (
           <>
             {isWatched ? <FaEyeSlash /> : <FaEye />}
-            <span>{isWatched ? 'Премахни от гледани' : 'Добави в гледани'}</span>
+            <span>{isWatched ? 'Remove from the List' : 'Add to the List'}</span>
           </>
         )}
       </button>

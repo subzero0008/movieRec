@@ -2,7 +2,7 @@
 {
     public class UserUpdateModel
     {
-        public string Username { get; set; }
-        public string NewPassword { get; set; }
+        public string Username { get; set; } // Променено на незадължително
+        public string NewPassword { get; set; } // Остава незадължително
     }
 }

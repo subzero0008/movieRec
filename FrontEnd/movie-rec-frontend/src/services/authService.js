@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Променете baseURL да не включва "/account" в края
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115/api';
 
 const api = axios.create({
@@ -10,7 +9,19 @@ const api = axios.create({
   },
 });
 
-// Добавете request interceptor за error handling
+// Интерцептор за добавяне на JWT токен към всяка заявка, ако има такъв
+api.interceptors.request.use(
+  (config) => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.token) {
+      config.headers.Authorization = `Bearer ${user.token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Интерцептор за обработка на грешки при отговорите
 api.interceptors.response.use(
   response => response,
   error => {
@@ -21,7 +32,7 @@ api.interceptors.response.use(
 
 export const register = async (userData) => {
   try {
-    const response = await api.post('/account/register', { // Забележете малката буква "a"
+    const response = await api.post('/account/register', { 
       Username: userData.username,
       Email: userData.email,
       Password: userData.password,
@@ -36,7 +47,7 @@ export const register = async (userData) => {
 
 export const login = async (identifier, password) => {
   try {
-    const response = await api.post('/Account/login', { // С главно "A" както е в Swagger
+    const response = await api.post('/Account/login', { 
       Identifier: identifier,
       Password: password
     });

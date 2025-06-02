@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("movierec")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5717e5392542611988bdc6553af3327c23fe8e2a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2471eb01421b21ff67658bb99a34c6cb31e3b871")]
 [assembly: System.Reflection.AssemblyProductAttribute("movierec")]
 [assembly: System.Reflection.AssemblyTitleAttribute("movierec")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

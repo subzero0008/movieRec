@@ -15,19 +15,19 @@ const SurveyResults = () => {
     <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-center text-white mb-8">
-          Вашите персонализирани препоръки
+         Your Personal Recomendations
         </h1>
         
         {movies.length === 0 ? (
           <div className="text-center py-12 bg-gray-800 rounded-lg">
             <p className="text-xl text-gray-300">
-              Не успяхме да намерим идеални съвпадения. Опитайте да промените предпочитанията си.
+              We could't find any recomendations at this moment, please try again
             </p>
             <Link 
               to="/survey" 
               className="mt-6 inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Опитайте отново
+              Try again
             </Link>
           </div>
         ) : (
@@ -48,7 +48,7 @@ const SurveyResults = () => {
                 <div className="mt-2">
                   {index < 3 && (
                     <div className="text-sm font-semibold text-blue-400">
-                      Съвпадение: {Math.round((1 - index * 0.15) * 100)}%
+                      Matches: {Math.round((1 - index * 0.15) * 100)}%
                     </div>
                   )}
                   <div className="text-sm text-gray-400 truncate">
@@ -67,7 +67,7 @@ const SurveyResults = () => {
             to="/survey"
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block"
           >
-            Опитайте с други предпочитания
+            Try with another recomendations
           </Link>
         </div>
       </div>

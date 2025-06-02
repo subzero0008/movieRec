@@ -37,12 +37,12 @@ export default function RatingForm({ movieId, initialRating = null, onRatingSubm
 
       // Автоматично обработване на 401 грешки
       if (response.status === 401) {
-        throw new Error('Сесията ви изтече. Моля, влезте отново.');
+        throw new Error('Session expired, please log in again');
       }
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Грешка при изпращането на ревюто');
+        throw new Error(errorData.message || 'Error');
       }
 
       const data = await response.json();
@@ -51,7 +51,7 @@ export default function RatingForm({ movieId, initialRating = null, onRatingSubm
 
     } catch (err) {
       console.error('Rating submission error:', err);
-      setError(err.message || 'Неочаквана грешка при изпращането');
+      setError(err.message || 'Error');
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +60,7 @@ export default function RatingForm({ movieId, initialRating = null, onRatingSubm
   return (
     <div className="mt-8 p-4 bg-gray-800 rounded-lg">
       <h3 className="text-xl text-white mb-4">
-        {initialRating ? 'Редактирайте вашето ревю' : 'Добавете вашето ревю'}
+        {initialRating ? 'Edit your review' : 'Add review'}
       </h3>
       
       {successMessage && (
@@ -71,7 +71,7 @@ export default function RatingForm({ movieId, initialRating = null, onRatingSubm
 
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-white mb-2">Рейтинг:</label>
+          <label className="block text-white mb-2">Ratings:</label>
           <select 
             value={rating}
             onChange={(e) => setRating(Number(e.target.value))}
@@ -80,21 +80,21 @@ export default function RatingForm({ movieId, initialRating = null, onRatingSubm
           >
             {[1, 2, 3, 4, 5].map(num => (
               <option key={num} value={num}>
-                {num} {num === 1 ? 'звезда' : 'звезди'}
+                {num} {num === 1 ? 'Star' : 'Star'}
               </option>
             ))}
           </select>
         </div>
         
         <div className="mb-4">
-          <label className="block text-white mb-2">Ревю:</label>
+          <label className="block text-white mb-2">Review:</label>
           <textarea
             value={review}
             onChange={(e) => setReview(e.target.value)}
             className="p-2 rounded-md w-full text-black"
             rows="4"
             disabled={isLoading}
-            placeholder="Напишете вашето мнение за филма..."
+            placeholder="Write your review..."
           />
         </div>
         
@@ -106,7 +106,7 @@ export default function RatingForm({ movieId, initialRating = null, onRatingSubm
             } text-white`}
             disabled={isLoading}
           >
-            {isLoading ? 'Запазване...' : initialRating ? 'Обнови' : 'Изпрати'}
+            {isLoading ? 'Saving...' : initialRating ? 'Refresh' : 'Send'}
           </button>
         </div>
       </form>
@@ -114,12 +114,12 @@ export default function RatingForm({ movieId, initialRating = null, onRatingSubm
       {error && (
         <div className="mt-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700">
           <p>{error}</p>
-          {error.includes('Сесията') && (
+          {error.includes('Session') && (
             <button 
               onClick={() => window.location.reload()}
               className="mt-2 text-blue-600 underline"
             >
-              Обнови страницата
+              Refresh the page
             </button>
           )}
         </div>

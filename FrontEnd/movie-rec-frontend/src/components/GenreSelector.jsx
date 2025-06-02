@@ -10,7 +10,7 @@ const GenreSelector = ({ onGenreSelect }) => {
     const fetchGenres = async () => {
       try {
         const data = await TvShowsService.getGenres();
-        setGenres(data.genres || data); // Зависи как е структуриран отговора
+        setGenres(data.genres || data); 
         setLoading(false);
       } catch (err) {
         setError(err.message);

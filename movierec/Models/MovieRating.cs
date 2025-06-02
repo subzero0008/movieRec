@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 
 public class MovieRating
 {
+    internal object Movie;
+
     public int Id { get; set; }
 
     [Required]

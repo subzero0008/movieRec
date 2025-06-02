@@ -123,24 +123,24 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
     }
   };
 
-  if (loading) return <div className="text-white py-4">Зареждане...</div>;
+  if (loading) return <div className="text-white py-4">Loading...</div>;
   if (error) return <div className="text-red-500 py-4">{error}</div>;
 
   return (
     <div className="bg-gray-800 rounded-lg p-6 mt-6">
-      <h3 className="text-xl text-white mb-4">Рейтинги</h3>
+      <h3 className="text-xl text-white mb-4">Rating</h3>
       
       {/* Обобщена информация */}
       {summary && summary.totalRatings > 0 ? (
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-white">Среден рейтинг:</span>
+            <span className="text-white">Averege rating:</span>
             <span className="text-yellow-400 font-bold">
               {summary.averageRating.toFixed(1)}/5
             </span>
           </div>
           <div className="flex items-center justify-between mb-4">
-            <span className="text-white">Общо оценки:</span>
+            <span className="text-white">All reviews:</span>
             <span className="text-white">{summary.totalRatings}</span>
           </div>
           
@@ -164,7 +164,7 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
           </div>
         </div>
       ) : (
-        <div className="text-gray-400 mb-6">Няма рейтинги все още</div>
+        <div className="text-gray-400 mb-6">No ratings Yet</div>
       )}
 
       {/* Потребителско ревю */}
@@ -173,7 +173,7 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
           {isEditing ? (
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <span className="text-white">Рейтинг:</span>
+                <span className="text-white">Rating:</span>
                 <select
                   value={editedRating}
                   onChange={(e) => setEditedRating(Number(e.target.value))}
@@ -198,20 +198,20 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
                   onClick={handleSave}
                   className="px-3 py-1 bg-green-600 text-white rounded"
                 >
-                  Запази
+                  Save
                 </button>
                 <button
                   onClick={() => setIsEditing(false)}
                   className="px-3 py-1 bg-gray-600 text-white rounded"
                 >
-                  Откажи
+                  Cancel
                 </button>
                 {userReview && (
                   <button
                     onClick={handleDelete}
                     className="px-3 py-1 bg-red-600 text-white rounded"
                   >
-                    Изтрий
+                    Delete
                   </button>
                 )}
               </div>
@@ -225,13 +225,13 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
                     onClick={handleEdit}
                     className="text-blue-400 hover:text-blue-300 text-sm"
                   >
-                    Редактирай
+                    Edit
                   </button>
                   <button
                     onClick={handleDelete}
                     className="text-red-400 hover:text-red-300 text-sm"
                   >
-                    Изтрий
+                    Delete
                   </button>
                 </div>
               </div>
@@ -244,7 +244,7 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
               onClick={() => setIsEditing(true)}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
-              Добави рейтинг
+              Add Rating
             </button>
           )}
         </div>

@@ -69,6 +69,16 @@
   },
   {
     "ContainingType": "movierec.Controllers.AdminController",
+    "Method": "GetAvailableRoles",
+    "RelativePath": "api/admin/available-roles",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "movierec.Controllers.AdminController",
     "Method": "CheckAdmin",
     "RelativePath": "api/admin/check-admin",
     "HttpMethod": "GET",
@@ -107,6 +117,16 @@
     "ContainingType": "movierec.Controllers.AdminController",
     "Method": "GetAllUsers",
     "RelativePath": "api/admin/users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "movierec.Controllers.AdminController",
+    "Method": "GetUsersWithRoles",
+    "RelativePath": "api/admin/users-with-roles",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
