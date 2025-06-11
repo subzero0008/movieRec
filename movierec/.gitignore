@@ -1,0 +1,23 @@
+ # Backend (.NET)
+appsettings.json
+appsettings.Development.json
+appsettings.*.json
+
+bin/
+obj/
+
+# Frontend (React)
+.env
+.env.local
+.env.*.local
+
+node_modules/
+dist/
+build/
+
+# OS/IDE специфични
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+
