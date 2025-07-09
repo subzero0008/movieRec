@@ -29,7 +29,7 @@ A full-stack web application for personalized movie recommendations. The platfor
 
 > 
 
-- Homepage https://imgur.com/a/N6Sp0KC 
+- Homepage [![2.png](https://i.postimg.cc/JtVF3Ftm/2.png)](https://postimg.cc/T50QfCrH)
 - Movie Detail Page
 - Polls / Surveys
 - Admin Panel
