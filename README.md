@@ -1,4 +1,4 @@
-<img width="912" height="622" alt="image" src="https://github.com/user-attachments/assets/cad91528-870b-4680-bc46-9993d33c921b" /># 🎬 Movie Recommendation Platform University Final Project. Computer Science major 
+# 🎬 Movie Recommendation Platform University Final Project. Computer Science major 
 
 A full-stack web application for personalized movie recommendations. The platform provides intelligent suggestions based on user preferences, moods, surveys, and integrates an AI movie expert for tailored advice. Users can explore detailed movie information, watch trailers, and participate in polls for upcoming screenings.
 
