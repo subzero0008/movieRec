@@ -31,9 +31,11 @@ A full-stack web application for personalized movie recommendations. The platfor
 
 - Homepage [![2.png](https://i.postimg.cc/JtVF3Ftm/2.png)](https://postimg.cc/T50QfCrH)
 - Movie Detail Page [![11.png](https://i.postimg.cc/Hs1H9ZqV/11.png)](https://postimg.cc/F1p29Zs4)
+- Personal Recomendations based on the user's Watched History [![Untitlesd.png](https://i.postimg.cc/GpN4D9q1/Untitlesd.png)](https://postimg.cc/d72QPsbW)
 - Polls / Surveys [![4.png](https://i.postimg.cc/c4cqMs7b/4.png)](https://postimg.cc/D8mY73Mr)
 - Responsive Design [![1.png](https://i.postimg.cc/MGNgKXxv/1.png)](https://postimg.cc/Z9PwwbWS) 
 - Movies Page [![3png.png](https://i.postimg.cc/RCsK3tys/3png.png)](https://postimg.cc/ThbpFKRg)
+- Personal Recomendations based on the user's Watched History
 ---
 
 ## ⚙️ Installation
