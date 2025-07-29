@@ -1,4 +1,4 @@
-# 🎬 Movie Recommendation Platform University Final Project. Computer Science major 
+<img width="912" height="622" alt="image" src="https://github.com/user-attachments/assets/cad91528-870b-4680-bc46-9993d33c921b" /># 🎬 Movie Recommendation Platform University Final Project. Computer Science major 
 
 A full-stack web application for personalized movie recommendations. The platform provides intelligent suggestions based on user preferences, moods, surveys, and integrates an AI movie expert for tailored advice. Users can explore detailed movie information, watch trailers, and participate in polls for upcoming screenings.
 
@@ -35,7 +35,11 @@ A full-stack web application for personalized movie recommendations. The platfor
 - Polls / Surveys [![4.png](https://i.postimg.cc/c4cqMs7b/4.png)](https://postimg.cc/D8mY73Mr)
 - Responsive Design [![1.png](https://i.postimg.cc/MGNgKXxv/1.png)](https://postimg.cc/Z9PwwbWS) 
 - Movies Page [![3png.png](https://i.postimg.cc/RCsK3tys/3png.png)](https://postimg.cc/ThbpFKRg)
-- Personal Recomendations based on the user's Watched History
+- My Profile page [![Untisdasdtled.png](https://i.postimg.cc/DzzCZpYM/Untisdasdtled.png)](https://postimg.cc/yDwhpjKm)
+- Top rated movies [![Untisdasdtled.png](https://i.postimg.cc/SQGzTQKc/Untisdasdtled.png)](https://postimg.cc/Yjh9jHYS)
+- Create moive poll for future streaming or thater projection [![Untisdasdtled.png](https://i.postimg.cc/ZqkRYXRT/Untisdasdtled.png)](https://postimg.cc/DSgFBjLD)
+- AI Assistant [![Untisdasdtled.png](https://i.postimg.cc/02F5Zh7p/Untisdasdtled.png)](https://postimg.cc/bs0jwCCJ)
+- Admin Dashboard [![Untisdasdtled.png](https://i.postimg.cc/FRHQhxjr/Untisdasdtled.png)](https://postimg.cc/p94SZzG4)
 ---
 
 ## ⚙️ Installation
