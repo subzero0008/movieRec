@@ -184,6 +184,7 @@ function App() {
         />
 
         {/* Динамични и статични маршрути */}
+        <Route path="/movies/search" element={<AdvancedSearch />} />
         <Route path="/movies/:id" element={<MovieDetail />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
