@@ -157,7 +157,7 @@ function App() {
           path="/"
           element={
             <>
-              <h1 className="text-4xl font-bold text-white text-center mb-12">
+              <h1 className="text-3xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-200 text-center mb-12">
                 {isSearching ? 'Search Results' : 'Trending Movies'}
               </h1>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
