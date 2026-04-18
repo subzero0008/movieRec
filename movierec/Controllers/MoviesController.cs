@@ -209,4 +209,51 @@ public class MoviesController : ControllerBase
             return StatusCode(500, new { message = "Internal server error" });
         }
     }
+    [HttpGet("popular")]
+    public async Task<IActionResult> GetPopularMovies([FromQuery] int page = 1)
+    {
+        try
+        {
+            var result = await _tmdbService.GetPopularMoviesAsync();
+            return Ok(new
+            {
+                results = result.Results,
+                page = result.Page,
+                totalPages = result.TotalPages,
+                totalResults = result.TotalResults
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting popular movies");
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
+    [HttpGet("top-rated")]
+    public async Task<IActionResult> GetTopRatedMovies([FromQuery] int page = 1)
+    {
+        try
+        {
+            var parameters = new movierec.Models.DiscoverParams
+            {
+                SortBy = "vote_average.desc",
+                MinVoteAverage = 7.0,
+                Page = page
+            };
+            var result = await _tmdbService.DiscoverMoviesAdvancedAsync(parameters);
+            return Ok(new
+            {
+                results = result.Results,
+                page = result.Page,
+                totalPages = result.TotalPages,
+                totalResults = result.TotalResults
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting top rated movies");
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
 }
