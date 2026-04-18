@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115/api';
@@ -30,9 +30,13 @@ export default function AdvancedSearch() {
   const [yearFrom, setYearFrom] = useState('');
   const [yearTo, setYearTo] = useState('');
   const [maxRuntime, setMaxRuntime] = useState('');
-  const [withCast, setWithCast] = useState('');
+  const [castQuery, setCastQuery] = useState('');
+  const [castSuggestions, setCastSuggestions] = useState([]);
+  const [selectedCast, setSelectedCast] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [castLoading, setCastLoading] = useState(false);
   const [error, setError] = useState(null);
+  const castTimeout = useRef(null);
   const navigate = useNavigate();
 
   const toggleGenre = (id) => {
@@ -40,6 +44,23 @@ export default function AdvancedSearch() {
       prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]
     );
   };
+
+  // Actor autocomplete
+  useEffect(() => {
+    if (castQuery.length < 2) { setCastSuggestions([]); return; }
+    clearTimeout(castTimeout.current);
+    castTimeout.current = setTimeout(async () => {
+      setCastLoading(true);
+      try {
+        const res = await fetch(`${API_URL}/movies/search/person?query=${encodeURIComponent(castQuery)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCastSuggestions(data);
+        }
+      } catch (e) { console.error(e); }
+      finally { setCastLoading(false); }
+    }, 400);
+  }, [castQuery]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -53,7 +74,7 @@ export default function AdvancedSearch() {
       if (yearFrom) params.append('yearFrom', `${yearFrom}-01-01`);
       if (yearTo) params.append('yearTo', `${yearTo}-12-31`);
       if (maxRuntime) params.append('maxRuntime', maxRuntime);
-      if (withCast) params.append('withCast', withCast);
+      if (selectedCast) params.append('withCast', selectedCast.id);
 
       const response = await fetch(`${API_URL}/movies/discover?${params.toString()}`);
       if (!response.ok) throw new Error(`Error: ${response.status}`);
@@ -63,7 +84,6 @@ export default function AdvancedSearch() {
       });
     } catch (err) {
       setError('Failed to fetch results. Please try again.');
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -76,7 +96,9 @@ export default function AdvancedSearch() {
     setYearFrom('');
     setYearTo('');
     setMaxRuntime('');
-    setWithCast('');
+    setCastQuery('');
+    setSelectedCast(null);
+    setCastSuggestions([]);
     setError(null);
   };
 
@@ -86,7 +108,6 @@ export default function AdvancedSearch() {
         <h1 className="text-3xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-200 mb-8 text-center">
           Advanced Search
         </h1>
-
         <form onSubmit={handleSearch} className="bg-gray-800 rounded-xl p-8 shadow-xl space-y-6">
 
           {/* Genres */}
@@ -94,16 +115,12 @@ export default function AdvancedSearch() {
             <label className="block text-yellow-400 text-sm font-semibold mb-3">Genres</label>
             <div className="flex flex-wrap gap-2">
               {GENRES.map(g => (
-                <button
-                  key={g.id}
-                  type="button"
-                  onClick={() => toggleGenre(g.id)}
+                <button key={g.id} type="button" onClick={() => toggleGenre(g.id)}
                   className={`px-3 py-1 text-sm rounded-full transition ${
                     selectedGenres.includes(g.id)
                       ? 'bg-yellow-500 text-gray-900 font-semibold'
                       : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
-                >
+                  }`}>
                   {g.name}
                 </button>
               ))}
@@ -113,14 +130,9 @@ export default function AdvancedSearch() {
           {/* Sort By */}
           <div>
             <label className="block text-yellow-400 text-sm font-semibold mb-2">Sort By</label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="w-full py-2 px-4 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
-            >
-              {SORT_OPTIONS.map(o => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
+              className="w-full py-2 px-4 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+              {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </div>
 
@@ -128,25 +140,15 @@ export default function AdvancedSearch() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-yellow-400 text-sm font-semibold mb-2">Min Rating (0-10)</label>
-              <input
-                type="number"
-                value={minRating}
-                onChange={(e) => setMinRating(e.target.value)}
-                placeholder="e.g. 7.0"
-                min="0" max="10" step="0.5"
-                className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              />
+              <input type="number" value={minRating} onChange={(e) => setMinRating(e.target.value)}
+                placeholder="e.g. 7.0" min="0" max="10" step="0.5"
+                className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"/>
             </div>
             <div>
               <label className="block text-yellow-400 text-sm font-semibold mb-2">Max Runtime (min)</label>
-              <input
-                type="number"
-                value={maxRuntime}
-                onChange={(e) => setMaxRuntime(e.target.value)}
-                placeholder="e.g. 120"
-                min="30"
-                className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              />
+              <input type="number" value={maxRuntime} onChange={(e) => setMaxRuntime(e.target.value)}
+                placeholder="e.g. 120" min="30"
+                className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"/>
             </div>
           </div>
 
@@ -154,56 +156,55 @@ export default function AdvancedSearch() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-yellow-400 text-sm font-semibold mb-2">From Year</label>
-              <input
-                type="number"
-                value={yearFrom}
-                onChange={(e) => setYearFrom(e.target.value)}
-                placeholder="e.g. 2000"
-                min="1900" max="2026"
-                className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              />
+              <input type="number" value={yearFrom} onChange={(e) => setYearFrom(e.target.value)}
+                placeholder="e.g. 2000" min="1900" max="2026"
+                className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"/>
             </div>
             <div>
               <label className="block text-yellow-400 text-sm font-semibold mb-2">To Year</label>
-              <input
-                type="number"
-                value={yearTo}
-                onChange={(e) => setYearTo(e.target.value)}
-                placeholder="e.g. 2024"
-                min="1900" max="2026"
-                className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              />
+              <input type="number" value={yearTo} onChange={(e) => setYearTo(e.target.value)}
+                placeholder="e.g. 2024" min="1900" max="2026"
+                className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"/>
             </div>
           </div>
 
-          {/* Cast */}
-          <div>
+          {/* Cast Autocomplete */}
+          <div className="relative">
             <label className="block text-yellow-400 text-sm font-semibold mb-2">Actor / Director</label>
-            <input
-              type="text"
-              value={withCast}
-              onChange={(e) => setWithCast(e.target.value)}
-              placeholder="e.g. Tom Hanks"
-              className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-            />
+            {selectedCast ? (
+              <div className="flex items-center gap-2 bg-yellow-500 text-gray-900 px-3 py-2 rounded-md">
+                <span className="font-semibold">{selectedCast.name}</span>
+                <button type="button" onClick={() => { setSelectedCast(null); setCastQuery(''); }}
+                  className="ml-auto text-gray-900 hover:text-red-700 font-bold">✕</button>
+              </div>
+            ) : (
+              <input type="text" value={castQuery} onChange={(e) => setCastQuery(e.target.value)}
+                placeholder="e.g. Tom Hanks"
+                className="w-full py-2 px-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"/>
+            )}
+            {castSuggestions.length > 0 && !selectedCast && (
+              <div className="absolute z-10 w-full mt-1 bg-gray-700 rounded-md shadow-lg">
+                {castLoading && <p className="text-gray-400 text-sm px-4 py-2">Searching...</p>}
+                {castSuggestions.map(p => (
+                  <button key={p.id} type="button"
+                    onClick={() => { setSelectedCast(p); setCastQuery(p.name); setCastSuggestions([]); }}
+                    className="w-full text-left px-4 py-2 text-white hover:bg-gray-600 transition">
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
-          {/* Buttons */}
           <div className="flex gap-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 py-3 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-md transition duration-300 disabled:opacity-50"
-            >
+            <button type="submit" disabled={loading}
+              className="flex-1 py-3 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-md transition duration-300 disabled:opacity-50">
               {loading ? 'Searching...' : '🔍 Search'}
             </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition duration-300"
-            >
+            <button type="button" onClick={handleReset}
+              className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition duration-300">
               Reset
             </button>
           </div>

@@ -193,4 +193,20 @@ public class MoviesController : ControllerBase
             return StatusCode(500, new { message = "Internal server error" });
         }
     }
+    [HttpGet("search/person")]
+    public async Task<IActionResult> SearchPerson([FromQuery] string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            return BadRequest(new { message = "Query is required" });
+        try
+        {
+            var result = await _tmdbService.SearchPersonAsync(query);
+            return Ok(result.Results.Take(5).Select(p => new { p.Id, p.Name }));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching person");
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
 }
