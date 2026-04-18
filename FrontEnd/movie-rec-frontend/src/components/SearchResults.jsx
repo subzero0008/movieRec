@@ -119,7 +119,7 @@ function SearchResults() {
     <div className="bg-gray-900 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-200 mb-2">
             Search Results for "{query}"
           </h1>
           <p className="text-gray-400 text-lg">
