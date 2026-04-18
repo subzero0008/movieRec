@@ -294,6 +294,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseRouting();
 app.UseCors("AllowReactApp");
+app.UseAuthentication();
+app.UseAuthorization();
 // Security headers
 app.Use(async (context, next) =>
 {
