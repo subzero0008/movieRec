@@ -56,7 +56,7 @@ Your tasks are:
       });
 
       const data = await response.json();
-      const botReply = data.content?.[0]?.text || "Sorry, I couldn't process that. Please try again.";
+      const botReply = data.text || "Sorry, I couldn't process that. Please try again.";
       setMessages(prev => [...prev, { role: "assistant", content: botReply }]);
     } catch (error) {
       console.error('Error:', error);
