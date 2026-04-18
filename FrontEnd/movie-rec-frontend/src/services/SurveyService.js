@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/Survey`;
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/Survey`;
 
 const getAuthHeaders = () => {
   const user = JSON.parse(localStorage.getItem('user'));

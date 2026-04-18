@@ -22,7 +22,7 @@ const MoviesList = () => {
       setError(null);
       
       let response;
-      const API_URL = import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api";
+      const API_URL = import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api";
 
       if (genreId) {
         // Combined filter - always use discover with genre + sort

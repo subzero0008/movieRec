@@ -45,7 +45,7 @@ function App() {
   const { user, logout, token } = useAuth() || {};
   
   // Базов URL за API-то (може да е от .env или локален fallback)
-  const API_URL = import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}';
+  const API_URL = import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}';
 
   // Извличане на тренди филмите при първоначално зареждане на приложението
   useEffect(() => {

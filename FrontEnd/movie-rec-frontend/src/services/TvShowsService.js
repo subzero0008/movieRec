@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'https://localhost:7115'; // Уверете се, че това е правилният URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'https://movierec-backend-7jqo.onrender.com';
 
 const instance = axios.create({
   baseURL: API_BASE_URL,

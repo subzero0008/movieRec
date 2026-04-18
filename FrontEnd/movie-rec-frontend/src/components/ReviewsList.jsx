@@ -23,7 +23,7 @@ export default function ReviewsList({ movieId }) {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(``${import.meta.env.VITE_API_BASE_URL || "${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}"}`/movieratings/${movieId}`, {
+      const response = await fetch(``${import.meta.env.VITE_API_BASE_URL || "${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}"}`/movieratings/${movieId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${user?.token}`
@@ -60,7 +60,7 @@ export default function ReviewsList({ movieId }) {
     }
     
     try {
-      const response = await fetch(``${import.meta.env.VITE_API_BASE_URL || "${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}"}`/movieratings/rate`, {
+      const response = await fetch(``${import.meta.env.VITE_API_BASE_URL || "${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}"}`/movieratings/rate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export default function ReviewsList({ movieId }) {
   }
 
   try {
-    const response = await fetch(``${import.meta.env.VITE_API_BASE_URL || "${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}"}`/movieratings/${movieId}`, {
+    const response = await fetch(``${import.meta.env.VITE_API_BASE_URL || "${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}"}`/movieratings/${movieId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${user.token}`

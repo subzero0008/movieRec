@@ -19,7 +19,7 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
         
         // Зареждане на обобщението
         const summaryResponse = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/movieratings/summary/${movieId}`
+          `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/movieratings/summary/${movieId}`
         );
         
         if (!summaryResponse.ok) throw new Error('Failed to load ratings summary');
@@ -29,7 +29,7 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
         // Ако потребителят е логнат, зареди неговото ревю
         if (user?.token) {
           const userReviewResponse = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/movieratings/user-review/${movieId}`,
+            `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/movieratings/user-review/${movieId}`,
             {
               headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -61,7 +61,7 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
   const handleSave = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/movieratings/${movieId}`,
+        `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/movieratings/${movieId}`,
         {
           method: userReview ? 'PUT' : 'POST',
           headers: {
@@ -81,8 +81,8 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
       if (onReviewUpdate) onReviewUpdate(); // Нотифициране на родителя за промяна
       // Презареждане на данните
       const [summaryRes, reviewRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/movieratings/summary/${movieId}`),
-        fetch(`${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/movieratings/user-review/${movieId}`, {
+        fetch(`${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/movieratings/summary/${movieId}`),
+        fetch(`${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/movieratings/user-review/${movieId}`, {
           headers: { 'Authorization': `Bearer ${user.token}` }
         })
       ]);
@@ -99,7 +99,7 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/movieratings/${movieId}`,
+        `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/movieratings/${movieId}`,
         {
           method: 'DELETE',
           headers: {
@@ -115,7 +115,7 @@ export default function RatingsSummary({ movieId, onReviewUpdate }) {
       
       // Презареждане на обобщението
       const summaryRes = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/movieratings/summary/${movieId}`
+        `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/movieratings/summary/${movieId}`
       );
       setSummary(await summaryRes.json());
     } catch (err) {

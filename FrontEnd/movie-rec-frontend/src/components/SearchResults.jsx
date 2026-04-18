@@ -24,7 +24,7 @@ function SearchResults() {
 
   // Зареждане на жанрове
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL || "${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}"}/movies/genres`)
+    fetch(`${import.meta.env.VITE_API_BASE_URL || "${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}"}/movies/genres`)
       .then(r => r.json())
       .then(data => setAllGenres(data))
       .catch(e => console.error(e));
