@@ -25,6 +25,7 @@ const MoviesList = () => {
 
       if (genreId) {
         // Combined filter - always use discover with genre + sort
+        console.log("loadMovies called with category:", category, "genre:", genreId);
         const sortBy = category === "popular" ? "popularity.desc" 
           : category === "top-rated" ? "vote_average.desc" 
           : "popularity.desc";
@@ -199,7 +200,7 @@ const MoviesList = () => {
         {selectedGenre && (
           <div className="flex items-center gap-3 mt-3">
             <button
-              onClick={() => loadMovies(selectedCategory, selectedGenre)}
+              onClick={() => loadMovies(selectedCategory, selectedGenre, 1)}
               className="px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-full transition"
             >
               🎬 Apply Filter
