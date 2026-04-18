@@ -32,7 +32,7 @@ const Profile = () => {
   
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115/api'}/movieratings/user/${user.id}?page=1&pageSize=20`, 
+          `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/movieratings/user/${user.id}?page=1&pageSize=20`, 
           {
             headers: {
               'Authorization': `Bearer ${user.token}`,
@@ -83,7 +83,7 @@ const handleDeleteRating = async (movieId) => {
 
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115/api'}/MovieRatings/${movieId}`,
+      `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}'}/MovieRatings/${movieId}`,
       {
         method: 'DELETE',
         headers: {
@@ -106,7 +106,7 @@ const handleDeleteRating = async (movieId) => {
 
   const handleSaveUsernameChange = async () => {
     try {
-      const response = await fetch('https://localhost:7115/api/Account/update-profile', {
+      const response = await fetch('${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}/Account/update-profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -137,7 +137,7 @@ const handleDeleteRating = async (movieId) => {
   
   const handleSavePasswordChange = async () => {
     try {
-      const response = await fetch('https://localhost:7115/api/Account/update-profile', {
+      const response = await fetch('${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}/Account/update-profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${user.token}`,
