@@ -35,14 +35,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy => policy
         .WithOrigins(
-    "http://localhost:5173",
-    "https://localhost:5173",
-    "https://moviereccc.netlify.app"
-)
+            "http://localhost:5173",
+            "https://localhost:5173",
+            "https://moviereccc.netlify.app"
+        )
         .AllowAnyMethod()
         .AllowAnyHeader()
-        .AllowCredentials()
-        .WithExposedHeaders("Set-Cookie"));
+    );
 });
 
 // Configure database FIRST
@@ -289,12 +288,12 @@ app.Use(async (context, next) =>
     }
 });
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseRouting();
 app.UseCors("AllowReactApp");
-app.UseAuthentication();
-app.UseAuthorization();
-
 // Security headers
 app.Use(async (context, next) =>
 {
