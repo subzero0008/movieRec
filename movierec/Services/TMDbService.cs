@@ -222,7 +222,31 @@ public class TMDbService
         });
     }
 
-    public async Task<List<Movie>> GetMoviesByGenresAsync(List<string> genres, string language = "en-US")
+    public async Task<MovieSearchResult> GetTopRatedMoviesAsync(string language = "en-US")
+    {
+        var cacheKey = $"top-rated-movies-{language}";
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
+            try
+            {
+                var url = $"movie/top_rated?api_key={_apiKey}&language={language}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
+                ProcessMovieResults(result?.Results);
+                return result ?? new MovieSearchResult { Results = new List<Movie>() };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting top rated movies");
+                return new MovieSearchResult { Results = new List<Movie>() };
+            }
+        });
+    }
+
+        public async Task<List<Movie>> GetMoviesByGenresAsync(List<string> genres, string language = "en-US")
     {
         var cacheKey = $"movies-by-genres-{string.Join("-", genres)}-{language}";
 
