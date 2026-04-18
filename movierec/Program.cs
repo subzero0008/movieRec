@@ -34,7 +34,11 @@ builder.Services.AddControllers()
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy => policy
-        .WithOrigins("http://localhost:5173", "https://localhost:5173")
+        .WithOrigins(
+    "http://localhost:5173",
+    "https://localhost:5173",
+    "https://moviereccc.netlify.app"
+)
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials()
