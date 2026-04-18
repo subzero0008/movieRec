@@ -27,6 +27,7 @@ import TopRatedMovies from './components/TopRatedMovies';
 import CreatePollForm from './components/CreatePollForm';
 import PollMovieSearchResults from './components/PollMovieSearchResults';
 import ActivePollsPage from './components/ActivePollsPage';
+import Footer from './components/Footer';
 import EditPollPage from './components/EditPollPage';
 
 function App() {
@@ -121,7 +122,7 @@ function App() {
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen p-8 relative">
+    <div className="bg-gray-900 min-h-screen flex flex-col relative">
       {/* Навигационна лента */}
       <Navbar
         user={user}
