@@ -85,12 +85,7 @@ const MoviesList = () => {
     initialize();
   }, []);
 
-  // Ефект за смяна на жанра
-  useEffect(() => {
-    if (selectedGenre) {
-      loadMovies(selectedCategory, selectedGenre);
-    }
-  }, [selectedGenre]);
+
 
   // Функция за смяна на категорията
   const handleCategoryChange = (category) => {
