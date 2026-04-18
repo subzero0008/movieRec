@@ -31,7 +31,8 @@ What kind of movies are you looking for? 😊`
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const API_URL = import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api";
+      const response = await fetch(`${API_URL}/chat/movie-expert`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
