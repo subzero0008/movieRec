@@ -136,10 +136,10 @@ const MoviesList = () => {
     }
     
     switch (selectedCategory) {
-      case 'trending': return `Trending Movies (${totalResults} results)`;
-      case 'popular': return `Popular Movies (${totalResults} results)`;
-      case 'top-rated': return `Top Rated Movies (${totalResults} results)`;
-      default: return `Movies (${totalResults} results)`;
+      case 'trending': return totalResults > 0 ? `Trending Movies (${totalResults} results)` : 'Trending Movies';
+      case 'popular': return totalResults > 0 ? `Popular Movies (${totalResults} results)` : 'Popular Movies';
+      case 'top-rated': return totalResults > 0 ? `Top Rated Movies (${totalResults} results)` : 'Top Rated Movies';
+      default: return 'Movies';
     }
   };
 
