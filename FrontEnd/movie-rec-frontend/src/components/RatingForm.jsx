@@ -24,7 +24,7 @@ export default function RatingForm({ movieId, initialRating = null, onRatingSubm
         headers['Authorization'] = `Bearer ${user.token}`;
       }
 
-      const response = await fetch('${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/movieratings/rate', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/movieratings/rate`, {
         method: 'POST',
         headers,
         credentials: 'include', // Важно за бисквитките
