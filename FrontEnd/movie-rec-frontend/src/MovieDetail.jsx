@@ -56,6 +56,7 @@ function MovieDetail() {
   useEffect(() => {
     const checkWatchedStatus = async () => {
       if (!user) return;
+      if (!id || isNaN(Number(id))) return;
       try {
         const { isWatched: status } = await checkIfWatched(id, user.token);
         setIsWatched(status);
