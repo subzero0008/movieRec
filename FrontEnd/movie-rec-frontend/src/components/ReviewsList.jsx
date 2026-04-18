@@ -28,7 +28,7 @@ export default function ReviewsList({ movieId }) {
         headers: {
           'Authorization': `Bearer ${user?.token}`
         },
-        credentials: 'include'
+
       });
   
       if (!response.ok) {
