@@ -136,10 +136,10 @@ const TvShowsList = () => {
     }
     
     switch (selectedCategory) {
-      case 'trending': return `Trending TV Shows (${totalResults} results)`;
-      case 'popular': return `Popular TV Shows (${totalResults} results)`;
-      case 'top-rated': return `Top Rated TV Shows (${totalResults} results)`;
-      default: return `TV Shows (${totalResults} results)`;
+      case 'trending': return totalResults > 0 ? `Trending TV Shows (${totalResults} results)` : 'Trending TV Shows';
+      case 'popular': return totalResults > 0 ? `Popular TV Shows (${totalResults} results)` : 'Popular TV Shows';
+      case 'top-rated': return totalResults > 0 ? `Top Rated TV Shows (${totalResults} results)` : 'Top Rated TV Shows';
+      default: return 'TV Shows';
     }
   };
 
