@@ -28,6 +28,7 @@ import CreatePollForm from './components/CreatePollForm';
 import PollMovieSearchResults from './components/PollMovieSearchResults';
 import ActivePollsPage from './components/ActivePollsPage';
 import Footer from './components/Footer';
+import AdvancedSearch from './components/AdvancedSearch';
 import EditPollPage from './components/EditPollPage';
 
 function App() {
