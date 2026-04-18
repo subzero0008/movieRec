@@ -190,12 +190,28 @@ const MoviesList = () => {
             <button
               key={genre.id}
               onClick={() => handleGenreChange(genre.id)}
-              className={`px-3 py-1 text-sm rounded-full ${selectedGenre === genre.id ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+              className={`px-3 py-1 text-sm rounded-full transition ${selectedGenre === genre.id ? 'bg-yellow-500 text-gray-900 font-semibold' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
             >
               {genre.name}
             </button>
           ))}
         </div>
+        {selectedGenre && (
+          <div className="flex items-center gap-3 mt-3">
+            <button
+              onClick={() => loadMovies(selectedCategory, selectedGenre)}
+              className="px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-full transition"
+            >
+              🎬 Apply Filter
+            </button>
+            <button
+              onClick={() => { setSelectedGenre(null); loadMovies(selectedCategory, null); }}
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-full transition text-sm"
+            >
+              ✕ Clear Genre
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Списък с филми */}
