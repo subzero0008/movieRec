@@ -23,15 +23,16 @@ const MoviesList = () => {
       let response;
       const API_URL = import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api";
 
-      if (genreId && category !== "trending") {
-        // Combined filter - use discover endpoint
-        const sortBy = category === "popular" ? "popularity.desc" : "vote_average.desc";
+      if (genreId) {
+        // Combined filter - always use discover with genre + sort
+        const sortBy = category === "popular" ? "popularity.desc" 
+          : category === "top-rated" ? "vote_average.desc" 
+          : "popularity.desc";
         const params = new URLSearchParams({ genres: genreId, sortBy, page });
+        if (category === "top-rated") params.append("minRating", "7.0");
         const res = await fetch(`${API_URL}/movies/discover?${params}`);
         const data = await res.json();
         response = { movies: data.results, page: data.page, totalPages: data.totalPages, totalResults: data.totalResults };
-      } else if (genreId) {
-        response = await MoviesService.getByGenre(genreId, page);
       } else {
         switch (category) {
           case "trending":
