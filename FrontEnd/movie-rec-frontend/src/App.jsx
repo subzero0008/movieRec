@@ -228,6 +228,7 @@ function App() {
         />
         <Route path="/polls/edit/:id" element={<EditPollPage />} />
       </Routes>
+      <Footer />
     </div>
   );
 }
