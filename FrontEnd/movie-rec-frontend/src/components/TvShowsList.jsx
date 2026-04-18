@@ -146,7 +146,7 @@ const TvShowsList = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-200">
           {getTitle()}
         </h1>
         
