@@ -13,6 +13,14 @@ function SearchResults() {
   const [query, setQuery] = useState(initialQuery);
   const [movies, setMovies] = useState(Array.isArray(state?.movies) ? state.movies : []);
 
+  // Обновяване при ново търсене
+  useEffect(() => {
+    if (state?.movies) {
+      setMovies(Array.isArray(state.movies) ? state.movies : []);
+      setQuery(state.query || '');
+    }
+  }, [location.state]);
+
   // Зареждане на резултати при промяна на query параметър в URL
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
