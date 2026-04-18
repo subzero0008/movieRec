@@ -414,13 +414,36 @@ export default function Navbar() {
               Movies
             </Link>
             {user && (
-              <Link
-                to="/watchlist"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-blue-700"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                List
-              </Link>
+              <>
+                <Link
+                  to="/tv"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-blue-700"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  TV Series
+                </Link>
+                <Link
+                  to="/polls/active"
+                  className="block px-3 py-2 rounded-md text-base font-medium bg-orange-600 hover:bg-orange-700 text-white rounded-md mt-1"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  🗳️ Vote
+                </Link>
+                <Link
+                  to="/recommendations"
+                  className="block px-3 py-2 rounded-md text-base font-medium bg-yellow-600 hover:bg-yellow-500 text-white rounded-md mt-1"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Top 10 Recommendations
+                </Link>
+                <Link
+                  to="/survey"
+                  className="block px-3 py-2 rounded-md text-base font-medium bg-green-600 hover:bg-green-700 text-white rounded-md mt-1"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  📋 Poll
+                </Link>
+              </>
             )}
           </div>
           <div className="pt-4 pb-3 border-t border-blue-700">
