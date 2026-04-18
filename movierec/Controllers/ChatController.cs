@@ -24,54 +24,58 @@ namespace MovieRecAPI.Controllers
         {
             try
             {
-                var apiKey = _configuration["Gemini:ApiKey"];
+                var apiKey = _configuration["Groq:ApiKey"];
                 if (string.IsNullOrEmpty(apiKey))
                     return StatusCode(500, new { error = "API key not configured" });
 
-                var systemPrompt = "You are FilmSense AI - an intelligent movie recommendation assistant. Ask clarifying questions about user preferences, suggest diverse movie options, provide detailed information about each film (year, director, cast, plot). Always respond in English. Use emojis for visual emphasis. Format movie recommendations clearly with title, year, and brief description.";
+                var messages = new List<object>
+                {
+                    new {
+                        role = "system",
+                        content = "You are FilmSense AI - an intelligent movie recommendation assistant. Ask clarifying questions about user preferences, suggest diverse movie options, provide detailed information about each film (year, director, cast, plot). Always respond in English. Use emojis for visual emphasis. Format movie recommendations clearly with title, year, and brief description."
+                    }
+                };
 
-                var contents = new List<object>();
                 foreach (var msg in request.Messages)
                 {
-                    contents.Add(new
-                    {
-                        role = msg.role == "assistant" ? "model" : "user",
-                        parts = new[] { new { text = msg.content } }
-                    });
+                    messages.Add(new { role = msg.role, content = msg.content });
                 }
 
                 var payload = new
                 {
-                    system_instruction = new { parts = new[] { new { text = systemPrompt } } },
-                    contents = contents
+                    model = "llama-3.3-70b-versatile",
+                    messages = messages,
+                    max_tokens = 1000,
+                    temperature = 0.7
                 };
 
                 var json = JsonSerializer.Serialize(payload);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={apiKey}";
-                var response = await _httpClient.PostAsync(url, content);
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+                var response = await _httpClient.PostAsync("https://api.groq.com/openai/v1/chat/completions", content);
                 var responseBody = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogError($"Gemini API error: {responseBody}");
+                    _logger.LogError($"Groq API error: {responseBody}");
                     return StatusCode((int)response.StatusCode, new { error = responseBody });
                 }
 
-                var geminiResponse = JsonSerializer.Deserialize<JsonElement>(responseBody);
-                var text = geminiResponse
-                    .GetProperty("candidates")[0]
+                var groqResponse = JsonSerializer.Deserialize<JsonElement>(responseBody);
+                var text = groqResponse
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
                     .GetProperty("content")
-                    .GetProperty("parts")[0]
-                    .GetProperty("text")
                     .GetString();
 
                 return Ok(new { text });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error calling Gemini API");
+                _logger.LogError(ex, "Error calling Groq API");
                 return StatusCode(500, new { error = "Internal server error" });
             }
         }
