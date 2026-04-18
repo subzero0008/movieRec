@@ -12,6 +12,7 @@ function SearchResults() {
   const initialQuery = state?.query || '';
   const [query, setQuery] = useState(initialQuery);
   const [movies, setMovies] = useState(Array.isArray(state?.movies) ? state.movies : []);
+  const [allGenres, setAllGenres] = useState([]);
 
   // Обновяване при ново търсене
   useEffect(() => {
@@ -20,6 +21,14 @@ function SearchResults() {
       setQuery(state.query || '');
     }
   }, [location.state]);
+
+  // Зареждане на жанрове
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api"}/movies/genres`)
+      .then(r => r.json())
+      .then(data => setAllGenres(data))
+      .catch(e => console.error(e));
+  }, []);
 
   // Зареждане на резултати при промяна на query параметър в URL
   useEffect(() => {
@@ -166,8 +175,20 @@ function SearchResults() {
                     )}
                   </div>
                   <p className="text-gray-400 text-sm">
-                    {movie.releaseDate ? new Date(movie.releaseDate).getFullYear() : 'N/A'}
+                    {movie.releaseDate ? new Date(movie.releaseDate).getFullYear() : "N/A"}
                   </p>
+                  {movie.genreIds?.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {movie.genreIds.slice(0, 3).map(gId => {
+                        const genre = allGenres.find(g => g.id === gId);
+                        return genre ? (
+                          <span key={gId} className="text-xs bg-gray-700 text-yellow-400 px-2 py-0.5 rounded-full">
+                            {genre.name}
+                          </span>
+                        ) : null;
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
