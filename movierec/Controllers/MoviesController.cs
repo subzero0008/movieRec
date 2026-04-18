@@ -235,13 +235,7 @@ public class MoviesController : ControllerBase
     {
         try
         {
-            var parameters = new movierec.Models.DiscoverParams
-            {
-                SortBy = "vote_average.desc",
-                MinVoteAverage = 7.0,
-                Page = page
-            };
-            var result = await _tmdbService.DiscoverMoviesAdvancedAsync(parameters);
+            var result = await _tmdbService.GetTopRatedMoviesAsync();
             return Ok(new
             {
                 results = result.Results,
