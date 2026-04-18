@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MoviesService } from '../services/MoviesService';
 import MovieCard from '../MovieCard';
@@ -8,6 +8,7 @@ const MoviesList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('trending');
+  const categoryRef = useRef('trending');
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,6 +93,7 @@ const MoviesList = () => {
   // Функция за смяна на категорията
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
+    categoryRef.current = category;
     setSelectedGenre(null);
     loadMovies(category);
   };
@@ -200,7 +202,7 @@ const MoviesList = () => {
         {selectedGenre && (
           <div className="flex items-center gap-3 mt-3">
             <button
-              onClick={() => loadMovies(selectedCategory, selectedGenre, 1)}
+              onClick={() => loadMovies(categoryRef.current, selectedGenre, 1)}
               className="px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-full transition"
             >
               🎬 Apply Filter
