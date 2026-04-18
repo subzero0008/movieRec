@@ -292,7 +292,7 @@ export default function Navbar() {
           onClick={() => setIsProfileOpen(false)}
           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-200"
         >
-          Manage Useres
+          Manage Users
         </Link>
         <Link
           to="/admin/reviews"
