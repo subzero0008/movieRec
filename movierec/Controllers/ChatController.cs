@@ -49,7 +49,7 @@ namespace MovieRecAPI.Controllers
                 var json = JsonSerializer.Serialize(payload);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
+                var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={apiKey}";
                 var response = await _httpClient.PostAsync(url, content);
                 var responseBody = await response.Content.ReadAsStringAsync();
 
