@@ -301,10 +301,10 @@ public async Task<IActionResult> GetTopRatedMoviesAllTime()
                 RatingCount = g.Count(),
                 LastRated = g.Max(r => r.RatedOn)
             })
-            .Where(g => g.RatingCount >= 5)
+            .Where(g => g.RatingCount >= 1)
             .OrderByDescending(g => g.AverageRating)
             .ThenByDescending(g => g.RatingCount)
-            .Take(10)
+            .Take(20)
             .ToListAsync();
 
         var movieDetails = new List<MovieRatingDto>();
