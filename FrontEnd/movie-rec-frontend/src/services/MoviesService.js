@@ -27,8 +27,8 @@ export const MoviesService = {
       return {
         movies: response.data.results || [],
         page: response.data.page || 1,
-        totalPages: response.data.total_pages || 1,
-        totalResults: response.data.total_results || 0
+        totalPages: response.data.totalPages || response.data.total_pages || 1,
+        totalResults: response.data.totalResults || response.data.total_results || 0
       };
     } catch (error) {
       console.error('Error fetching trending movies:', error);
@@ -44,8 +44,8 @@ export const MoviesService = {
       return {
         movies: response.data.results || [],
         page: response.data.page || 1,
-        totalPages: response.data.total_pages || 1,
-        totalResults: response.data.total_results || 0
+        totalPages: response.data.totalPages || response.data.total_pages || 1,
+        totalResults: response.data.totalResults || response.data.total_results || 0
       };
     } catch (error) {
       console.error('Error fetching popular movies:', error);
@@ -61,8 +61,8 @@ export const MoviesService = {
       return {
         movies: response.data.results || [],
         page: response.data.page || 1,
-        totalPages: response.data.total_pages || 1,
-        totalResults: response.data.total_results || 0
+        totalPages: response.data.totalPages || response.data.total_pages || 1,
+        totalResults: response.data.totalResults || response.data.total_results || 0
       };
     } catch (error) {
       console.error('Error fetching top rated movies:', error);
@@ -78,8 +78,8 @@ export const MoviesService = {
       return {
         movies: response.data.results || [], // Поправено от results (беше results)
         page: response.data.page || 1,
-        totalPages: response.data.total_pages || 1,
-        totalResults: response.data.total_results || 0
+        totalPages: response.data.totalPages || response.data.total_pages || 1,
+        totalResults: response.data.totalResults || response.data.total_results || 0
       };
     } catch (error) {
       console.error('Error fetching movies by genre:', error);
