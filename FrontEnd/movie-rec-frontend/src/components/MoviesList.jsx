@@ -21,18 +21,26 @@ const MoviesList = () => {
       setError(null);
       
       let response;
-      
-      if (genreId) {
+      const API_URL = import.meta.env.VITE_API_BASE_URL || "https://localhost:7115/api";
+
+      if (genreId && category !== "trending") {
+        // Combined filter - use discover endpoint
+        const sortBy = category === "popular" ? "popularity.desc" : "vote_average.desc";
+        const params = new URLSearchParams({ genres: genreId, sortBy, page });
+        const res = await fetch(`${API_URL}/movies/discover?${params}`);
+        const data = await res.json();
+        response = { movies: data.results, page: data.page, totalPages: data.totalPages, totalResults: data.totalResults };
+      } else if (genreId) {
         response = await MoviesService.getByGenre(genreId, page);
       } else {
         switch (category) {
-          case 'trending':
+          case "trending":
             response = await MoviesService.getTrending(page);
             break;
-          case 'popular':
+          case "popular":
             response = await MoviesService.getPopular(page);
             break;
-          case 'top-rated':
+          case "top-rated":
             response = await MoviesService.getTopRated(page);
             break;
           default:
