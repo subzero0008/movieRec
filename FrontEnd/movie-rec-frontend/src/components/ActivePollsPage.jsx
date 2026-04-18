@@ -348,13 +348,13 @@ const PollCard = ({ poll, onVote, onEdit, onDelete, token, currentUser }) => {
                         src={
                           movie.posterPath
                             ? `https://image.tmdb.org/t/p/w500${movie.posterPath}`
-                            : 'https://via.placeholder.com/500x750?text=No+Poster'
+                            : 'https://placehold.co/500x750?text=No+Poster'
                         }
                         alt={movie.title}
                         className="absolute top-0 left-0 w-full h-full object-cover"
                         onError={(e) => {
                           e.target.src =
-                            'https://via.placeholder.com/500x750?text=No+Poster';
+                            'https://placehold.co/500x750?text=No+Poster';
                         }}
                       />
                     </div>

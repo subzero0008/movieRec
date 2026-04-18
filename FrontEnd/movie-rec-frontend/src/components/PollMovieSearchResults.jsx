@@ -137,11 +137,11 @@ function PollMovieSearchResults({ onAddMovie }) {
               <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-105 h-full flex flex-col">
                 <div className="relative pt-[150%] overflow-hidden">
                   <img
-                    src={movie.posterUrl || `https://image.tmdb.org/t/p/w500${movie.posterPath}` || 'https://via.placeholder.com/500x750?text=No+Poster'}
+                    src={movie.posterUrl || `https://image.tmdb.org/t/p/w500${movie.posterPath}` || 'https://placehold.co/500x750?text=No+Poster'}
                     alt={movie.title}
                     className="absolute top-0 left-0 w-full h-full object-cover transition duration-500 group-hover:opacity-80"
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/500x750?text=No+Poster';
+                      e.target.src = 'https://placehold.co/500x750?text=No+Poster';
                     }}
                   />
                 </div>
