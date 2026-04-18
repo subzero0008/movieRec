@@ -151,4 +151,46 @@ public class MoviesController : ControllerBase
             });
         }
     }
+    [HttpGet("discover")]
+    public async Task<IActionResult> DiscoverMovies(
+        [FromQuery] string? genres = null,
+        [FromQuery] string? sortBy = "popularity.desc",
+        [FromQuery] double? minRating = null,
+        [FromQuery] int? year = null,
+        [FromQuery] string? yearFrom = null,
+        [FromQuery] string? yearTo = null,
+        [FromQuery] int? maxRuntime = null,
+        [FromQuery] string? withCast = null,
+        [FromQuery] int? page = 1)
+    {
+        try
+        {
+            var parameters = new movierec.Models.DiscoverParams
+            {
+                Genres = genres,
+                SortBy = sortBy ?? "popularity.desc",
+                IsRatingImportant = minRating.HasValue,
+                MinVoteAverage = minRating,
+                PrimaryReleaseYear = year,
+                PrimaryReleaseDateGte = yearFrom,
+                PrimaryReleaseDateLte = yearTo,
+                WithRuntimeLte = maxRuntime,
+                WithCast = withCast,
+                Page = page
+            };
+            var result = await _tmdbService.DiscoverMoviesAdvancedAsync(parameters);
+            return Ok(new
+            {
+                results = result.Results,
+                page = result.Page,
+                totalPages = result.TotalPages,
+                totalResults = result.TotalResults
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error discovering movies");
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
 }
