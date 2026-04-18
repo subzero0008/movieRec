@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getCurrentUser } from './authService';
 import Swal from 'sweetalert2';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
