@@ -91,7 +91,7 @@ const Login = () => {
           disabled={isLoading}
           className={`w-full ${isLoading ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-600'} text-white py-2 px-4 rounded`}
         >
-          {isLoading ? 'Влизане...' : 'Влез'}
+          {isLoading ? 'Logging in...' : 'Log in'}
         </button>
       </form>
       <p className="mt-3 text-center">
