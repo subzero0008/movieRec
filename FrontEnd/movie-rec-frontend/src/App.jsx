@@ -28,6 +28,7 @@ import CreatePollForm from './components/CreatePollForm';
 import PollMovieSearchResults from './components/PollMovieSearchResults';
 import ActivePollsPage from './components/ActivePollsPage';
 import Footer from './components/Footer';
+import HomePage from './components/HomePage';
 import AdvancedSearch from './components/AdvancedSearch';
 import EditPollPage from './components/EditPollPage';
 
@@ -157,29 +158,11 @@ function App() {
         <Route
           path="/"
           element={
-            <>
-              <h1 className="text-3xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-200 text-center mb-12">
-                {isSearching ? 'Search Results' : 'Trending Movies'}
-              </h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {moviesToDisplay.length > 0 ? (
-                  moviesToDisplay.map((movie) => (
-                    <MovieCard
-                      key={movie.id}
-                      movie={{
-                        id: movie.id,
-                        title: movie.title,
-                        posterUrl: movie.posterUrl || `https://image.tmdb.org/t/p/w500${movie.posterPath}`,
-                        releaseDate: movie.releaseDate,
-                        voteAverage: movie.voteAverage,
-                      }}
-                    />
-                  ))
-                ) : (
-                  <div className="text-white text-center mt-8">Няма намерени филми</div>
-                )}
-              </div>
-            </>
+            <HomePage
+              trendingMovies={trendingMovies}
+              isSearching={isSearching}
+              searchResults={searchResults}
+            />
           }
         />
 
