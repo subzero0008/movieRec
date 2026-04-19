@@ -153,7 +153,7 @@ function App() {
   </div>
 )}
 
-      {/* Определяне на маршрути */}
+     {/* Определяне на маршрути */}
       <Routes>
         {/* Начална страница – показва тренди или търсени филми */}
         <Route
@@ -168,6 +168,7 @@ function App() {
         />
 
         {/* Динамични и статични маршрути */}
+        <Route path="/about" element={<About />} />
         <Route path="/movies/search" element={<AdvancedSearch />} />
         <Route path="/movies/:id" element={<MovieDetail />} />
         <Route path="/register" element={<Register />} />
@@ -200,10 +201,13 @@ function App() {
           path="/polls/create" 
           element={<CreatePollForm token={token} />} 
         />
+        
+        {/* Административен панел */}
         <Route element={<AdminLayout />}>
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/reviews" element={<AdminReviews />} />
         </Route>
+
         <Route 
           path="/poll-movie-search" 
           element={<PollMovieSearchResults onAddMovie={(movie) => {
@@ -213,6 +217,9 @@ function App() {
           }} />} 
         />
         <Route path="/polls/edit/:id" element={<EditPollPage />} />
+        
+        {/* Catch-all за несъществуващи страници (по избор) */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <Footer />
     </div>
