@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-const MovieCard = ({ movie, showRecommendationBadge = false, showBothRatings = false }) => {
+const MovieCard = ({ movie, showRecommendationBadge = false, showBothRatings = false, allGenres = [] }) => {
   // Format date for better readability
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -9,7 +9,10 @@ const MovieCard = ({ movie, showRecommendationBadge = false, showBothRatings = f
   };
 
   // Show top 2 genres
-  const displayGenres = movie.mainGenres?.slice(0, 2).join(' • ') || '';
+  const displayGenres = movie.mainGenres?.slice(0, 2).join(' • ') ||
+    (movie.genreIds && allGenres.length > 0
+      ? movie.genreIds.slice(0, 2).map(id => allGenres.find(g => g.id === id)?.name).filter(Boolean).join(' • ')
+      : '');
 
   return (
     <Link 
