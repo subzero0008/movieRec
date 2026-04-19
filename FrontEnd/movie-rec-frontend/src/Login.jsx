@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { login as apiLogin } from './services/authService';
+import Swal from 'sweetalert2';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -96,7 +97,15 @@ const Login = () => {
       <p className="mt-3 text-center">
         <button
           type="button"
-          onClick={() => alert('To reset your password, please contact the system administrator at zerosub@gmail.com')}
+          onClick={() => Swal.fire({
+            title: 'Forgot Password?',
+            html: 'To reset your password, please contact the system administrator at <strong>zerosub@gmail.com</strong>',
+            icon: 'info',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#EAB308',
+            background: '#1F2937',
+            color: '#FFFFFF',
+          })}
           className="text-yellow-400 hover:text-yellow-300 text-sm underline bg-transparent border-none cursor-pointer"
         >
           Forgot your password?
