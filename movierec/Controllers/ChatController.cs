@@ -24,77 +24,57 @@ namespace MovieRecAPI.Controllers
         {
             try
             {
-                // Вземаме ключа от Render Environment Variables
-                var apiKey = _configuration["GEMINI_API_KEY"]; 
+                var apiKey = _configuration["Groq:ApiKey"];
                 if (string.IsNullOrEmpty(apiKey))
-                    return StatusCode(500, new { error = "Gemini API key not configured" });
+                    return StatusCode(500, new { error = "Groq API key not configured" });
 
-                // Структурата на Gemini изисква "contents" вместо "messages"
-                // И "parts" вместо "content"
-                var contents = new List<object>();
-
-                // Добавяме системната инструкция като първо съобщение (Gemini 1.5 поддържа системни инструкции)
-                // За по-просто тук я добавяме като 'user' съобщение, което описва ролята
-                contents.Add(new
+                var messages = new List<object>
                 {
-                    role = "user",
-                    parts = new[] { new { text = "SYSTEM INSTRUCTION: You are FilmSense AI - an intelligent movie recommendation assistant. Always respond in English. Use emojis. Format recommendations clearly." } }
-                });
-                contents.Add(new { role = "model", parts = new[] { new { text = "Understood. I am ready to assist." } } });
+                    new {
+                        role = "system",
+                        content = "You are FilmSense AI - an intelligent movie recommendation assistant. Ask clarifying questions about user preferences, suggest diverse movie options, provide detailed information about each film (year, director, cast, plot). Always respond in English. Use emojis for visual emphasis. Format movie recommendations clearly with title, year, and brief description."
+                    }
+                };
 
                 foreach (var msg in request.Messages)
-                {
-                    // Gemini разпознава ролите "user" и "model" (вместо "assistant")
-                    var role = msg.role == "assistant" ? "model" : "user";
-                    contents.Add(new
-                    {
-                        role = role,
-                        parts = new[] { new { text = msg.content } }
-                    });
-                }
+                    messages.Add(new { role = msg.role, content = msg.content });
 
                 var payload = new
                 {
-                    contents = contents,
-                    generationConfig = new
-                    {
-                        maxOutputTokens = 1000,
-                        temperature = 0.7
-                    }
+                    model = "llama-3.3-70b-versatile",
+                    messages = messages,
+                    max_tokens = 1000,
+                    temperature = 0.7
                 };
 
                 var json = JsonSerializer.Serialize(payload);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // URL адресът на Google Gemini с API ключа като параметър
-var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key={apiKey}";
-
                 _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
 
-                var response = await _httpClient.PostAsync(url, content);
+                var response = await _httpClient.PostAsync("https://api.groq.com/openai/v1/chat/completions", content);
                 var responseBody = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogError($"Gemini API error: {responseBody}");
+                    _logger.LogError($"Groq API error: {responseBody}");
                     return StatusCode((int)response.StatusCode, new { error = responseBody });
                 }
 
-                // Парсваме отговора на Google
-                using var doc = JsonDocument.Parse(responseBody);
-                var text = doc.RootElement
-                    .GetProperty("candidates")[0]
+                var groqResponse = JsonSerializer.Deserialize<JsonElement>(responseBody);
+                var text = groqResponse
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
                     .GetProperty("content")
-                    .GetProperty("parts")[0]
-                    .GetProperty("text")
                     .GetString();
 
                 return Ok(new { text });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error calling Gemini API");
-                return StatusCode(500, new { error = "Internal server error: " + ex.Message });
+                _logger.LogError(ex, "Error calling Groq API");
+                return StatusCode(500, new { error = "Internal server error" });
             }
         }
     }
