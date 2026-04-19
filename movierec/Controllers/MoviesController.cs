@@ -20,11 +20,11 @@ public class MoviesController : ControllerBase
     [HttpGet("trending")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetTrendingMovies()
+    public async Task<IActionResult> GetTrendingMovies([FromQuery] int page = 1)
     {
         try
         {
-            var result = await _tmdbService.GetTrendingMoviesAsync();
+            var result = await _tmdbService.GetTrendingMoviesAsync(page: page);
             return Ok(new
             {
                 results = result.Results,
@@ -214,7 +214,7 @@ public class MoviesController : ControllerBase
     {
         try
         {
-            var result = await _tmdbService.GetPopularMoviesAsync();
+            var result = await _tmdbService.GetPopularMoviesAsync(page: page);
             return Ok(new
             {
                 results = result.Results,
@@ -235,7 +235,7 @@ public class MoviesController : ControllerBase
     {
         try
         {
-            var result = await _tmdbService.GetTopRatedMoviesAsync();
+            var result = await _tmdbService.GetTopRatedMoviesAsync(page: page);
             return Ok(new
             {
                 results = result.Results,

@@ -194,7 +194,7 @@ public class TMDbService
         return string.Join(",", validKeywords);
     }
 
-    public async Task<MovieSearchResult> GetPopularMoviesAsync(string language = "en-US")
+    public async Task<MovieSearchResult> GetPopularMoviesAsync(string language = "en-US", int page = 1)
     {
         var cacheKey = $"popular-movies-{language}";
 
@@ -204,7 +204,8 @@ public class TMDbService
 
             try
             {
-                var url = $"movie/popular?api_key={_apiKey}&language={language}";
+                page = Math.Min(page, 5);
+                var url = $"movie/popular?api_key={_apiKey}&language={language}&page={page}";
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
@@ -222,7 +223,7 @@ public class TMDbService
         });
     }
 
-    public async Task<MovieSearchResult> GetTopRatedMoviesAsync(string language = "en-US")
+    public async Task<MovieSearchResult> GetTopRatedMoviesAsync(string language = "en-US", int page = 1)
     {
         var cacheKey = $"top-rated-movies-{language}";
         return await _cache.GetOrCreateAsync(cacheKey, async entry =>
@@ -230,7 +231,8 @@ public class TMDbService
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
             try
             {
-                var url = $"movie/top_rated?api_key={_apiKey}&language={language}";
+                page = Math.Min(page, 5);
+                var url = $"movie/top_rated?api_key={_apiKey}&language={language}&page={page}";
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
@@ -310,7 +312,7 @@ public class TMDbService
         });
     }
 
-    public async Task<MovieSearchResult> GetTrendingMoviesAsync(string language = "en-US")
+    public async Task<MovieSearchResult> GetTrendingMoviesAsync(string language = "en-US", int page = 1)
     {
         var cacheKey = $"trending-movies-{language}";
 
@@ -320,7 +322,8 @@ public class TMDbService
 
             try
             {
-                var url = $"trending/movie/day?api_key={_apiKey}&language={language}";
+                page = Math.Min(page, 5);
+                var url = $"trending/movie/day?api_key={_apiKey}&language={language}&page={page}";
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
