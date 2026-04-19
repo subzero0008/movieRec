@@ -101,6 +101,7 @@ const About = () => {
               </div>
             </div>
             
+            <a 
               href="mailto:zerosub07@gmail.com"
               className="flex items-center gap-3 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-xl px-6 py-4 transition duration-300"
             >
