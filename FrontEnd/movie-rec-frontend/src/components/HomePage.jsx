@@ -54,7 +54,7 @@ const HomePage = ({ trendingMovies, isSearching, searchResults }) => {
             <h2 className="text-2xl font-bold text-yellow-400 mb-3">Recommended For You</h2>
             <p className="text-gray-300 mb-2">Get personalized movie recommendations tailored to your taste.</p>
             <p className="text-gray-400 text-sm mb-6">
-              To unlock recommendations, you need to <span className="text-yellow-400 font-semibold">rate at least 10 movies</span> and <span className="text-yellow-400 font-semibold">add movies to your watched list</span>. The more you interact, the better your recommendations become!
+              To unlock recommendations, you need to <span className="text-yellow-400 font-semibold">rate at least 5 movies</span> and <span className="text-yellow-400 font-semibold">add movies to your watched list</span>. The more you interact, the better your recommendations become!
             </p>
             <Link to="/recommendations" className="inline-block px-8 py-3 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-full transition duration-300 shadow-lg">
               View My Recommendations
