@@ -47,6 +47,22 @@ const HomePage = ({ trendingMovies, isSearching, searchResults }) => {
         </div>
       )}
 
+      {!isSearching && user && (
+        <div className="max-w-4xl mx-auto px-6 py-10">
+          <div className="bg-gradient-to-r from-yellow-900/40 to-blue-900/40 border border-yellow-500/30 rounded-2xl p-8 text-center shadow-2xl">
+            <div className="text-5xl mb-4">⭐</div>
+            <h2 className="text-2xl font-bold text-yellow-400 mb-3">Recommended For You</h2>
+            <p className="text-gray-300 mb-2">Get personalized movie recommendations tailored to your taste.</p>
+            <p className="text-gray-400 text-sm mb-6">
+              To unlock recommendations, you need to <span className="text-yellow-400 font-semibold">rate at least 10 movies</span> and <span className="text-yellow-400 font-semibold">add movies to your watched list</span>. The more you interact, the better your recommendations become!
+            </p>
+            <Link to="/recommendations" className="inline-block px-8 py-3 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold rounded-full transition duration-300 shadow-lg">
+              View My Recommendations
+            </Link>
+          </div>
+        </div>
+      )}
+
       {!isSearching && (
         <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link to="/movies/search" className="bg-gray-800 rounded-xl p-6 text-center transition hover:scale-105 duration-300 shadow-lg border border-gray-700 hover:border-yellow-500">
