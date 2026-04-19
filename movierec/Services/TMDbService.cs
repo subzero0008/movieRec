@@ -196,7 +196,7 @@ public class TMDbService
 
     public async Task<MovieSearchResult> GetPopularMoviesAsync(string language = "en-US", int page = 1)
     {
-        var cacheKey = $"popular-movies-{language}";
+        var cacheKey = $"popular-movies-{language}-{page}";
 
         return await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
@@ -225,7 +225,7 @@ public class TMDbService
 
     public async Task<MovieSearchResult> GetTopRatedMoviesAsync(string language = "en-US", int page = 1)
     {
-        var cacheKey = $"top-rated-movies-{language}";
+        var cacheKey = $"top-rated-movies-{language}-{page}";
         return await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
@@ -314,7 +314,7 @@ public class TMDbService
 
     public async Task<MovieSearchResult> GetTrendingMoviesAsync(string language = "en-US", int page = 1)
     {
-        var cacheKey = $"trending-movies-{language}";
+        var cacheKey = $"trending-movies-{language}-{page}";
 
         return await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
