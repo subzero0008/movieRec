@@ -15,29 +15,32 @@ export default function ReviewsList({ movieId }) {
   });
 
   useEffect(() => {
-    console.log('AuthContext User:', user); // 🐛 Дебъг: user от контекста
   }, [user]);
 
   const fetchReviews = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
+      const headers = {};
+      if (user?.token) headers['Authorization'] = `Bearer ${user.token}`;
+
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/movieratings/${movieId}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${user?.token}`
-        },
-
+        headers,
       });
-  
+
+      if (response.status === 401) {
+        setReviews([]);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-      console.log('API Response:', data);
-      setReviews(data.ratings); // Уверете се, че всяко ревю има movieId
+      setReviews(data.ratings);
     } catch (err) {
       console.error('Error fetching reviews:', err);
       setError(err.message);
@@ -45,7 +48,6 @@ export default function ReviewsList({ movieId }) {
       setLoading(false);
     }
   };
-  
   useEffect(() => {
     fetchReviews();
   }, [movieId, user?.token]);
