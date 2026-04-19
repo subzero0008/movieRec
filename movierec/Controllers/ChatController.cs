@@ -67,7 +67,7 @@ namespace MovieRecAPI.Controllers
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 // URL адресът на Google Gemini с API ключа като параметър
-var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
+var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key={apiKey}";
 
                 _httpClient.DefaultRequestHeaders.Clear();
 
