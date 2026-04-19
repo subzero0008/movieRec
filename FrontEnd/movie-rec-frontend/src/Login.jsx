@@ -93,6 +93,15 @@ const Login = () => {
           {isLoading ? 'Влизане...' : 'Влез'}
         </button>
       </form>
+      <p className="mt-3 text-center">
+        <button
+          type="button"
+          onClick={() => alert('To reset your password, please contact the system administrator at zerosub@gmail.com')}
+          className="text-yellow-400 hover:text-yellow-300 text-sm underline bg-transparent border-none cursor-pointer"
+        >
+          Forgot your password?
+        </button>
+      </p>
       <p className="mt-4 text-white">
         Don't have acount yet?{' '}
         <a href="/register" className="text-blue-400 hover:underline">
