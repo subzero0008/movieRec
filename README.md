@@ -1,4 +1,5 @@
 # 🎬 Movie Recommendation Platform University Final Project. Computer Science major 
+# Live Demo : https://moviereccc.netlify.app/movies
 
 A full-stack web application for personalized movie recommendations. The platform provides intelligent suggestions based on user preferences, moods, surveys, and integrates an AI movie expert for tailored advice. Users can explore detailed movie information, watch trailers, and participate in polls for upcoming screenings.
 
