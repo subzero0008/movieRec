@@ -725,6 +725,12 @@ public class TMDbService
     {
         [JsonProperty("results")]
         public List<TVShow> Results { get; set; } = new List<TVShow>();
+        [JsonProperty("page")]
+        public int Page { get; set; } = 1;
+        [JsonProperty("total_pages")]
+        public int TotalPages { get; set; } = 1;
+        [JsonProperty("total_results")]
+        public int TotalResults { get; set; } = 0;
     }
 
     public class TVShowSearchResult
@@ -809,6 +815,56 @@ public class TMDbService
 
         [JsonProperty("episode_count")]
         public int EpisodeCount { get; set; }
+    }
+
+    public async Task<TrendingTVShowsResponse> GetPopularTVShowsAsync(string language = "en-US", int page = 1)
+    {
+        var cacheKey = $"popular-tv-{language}-{page}";
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
+            try
+            {
+                page = Math.Min(page, 5);
+                var url = $"tv/popular?api_key={_apiKey}&language={language}&page={page}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<TrendingTVShowsResponse>(responseContent);
+                ProcessTVShowResults(result?.Results);
+                return result ?? new TrendingTVShowsResponse { Results = new List<TVShow>() };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting popular TV shows");
+                return new TrendingTVShowsResponse { Results = new List<TVShow>() };
+            }
+        });
+    }
+
+    public async Task<TrendingTVShowsResponse> GetTopRatedTVShowsAsync(string language = "en-US", int page = 1)
+    {
+        var cacheKey = $"top-rated-tv-{language}-{page}";
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6);
+            try
+            {
+                page = Math.Min(page, 5);
+                var url = $"tv/top_rated?api_key={_apiKey}&language={language}&page={page}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<TrendingTVShowsResponse>(responseContent);
+                ProcessTVShowResults(result?.Results);
+                return result ?? new TrendingTVShowsResponse { Results = new List<TVShow>() };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting top rated TV shows");
+                return new TrendingTVShowsResponse { Results = new List<TVShow>() };
+            }
+        });
     }
 
     public async Task<List<Genre>> GetTVShowGenresAsync(string language = "en-US")

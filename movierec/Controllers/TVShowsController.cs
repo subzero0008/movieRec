@@ -193,4 +193,33 @@ public class TVShowsController : ControllerBase
             });
         }
     }
+    [HttpGet("popular")]
+    public async Task<IActionResult> GetPopularTVShows([FromQuery] int page = 1)
+    {
+        try
+        {
+            var result = await _tmdbService.GetPopularTVShowsAsync(page: page);
+            return Ok(new { results = result.Results, page = result.Page, totalPages = result.TotalPages, totalResults = result.TotalResults });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting popular TV shows");
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
+
+    [HttpGet("top-rated")]
+    public async Task<IActionResult> GetTopRatedTVShows([FromQuery] int page = 1)
+    {
+        try
+        {
+            var result = await _tmdbService.GetTopRatedTVShowsAsync(page: page);
+            return Ok(new { results = result.Results, page = result.Page, totalPages = result.TotalPages, totalResults = result.TotalResults });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting top rated TV shows");
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
 }
