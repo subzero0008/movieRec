@@ -1,16 +1,12 @@
 import axios from 'axios';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/Survey`;
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/Survey`;
 
 const getAuthHeaders = () => {
   const user = JSON.parse(localStorage.getItem('user'));
-  if (!user?.token) {
-    throw new Error('Authentication required');
-  }
-  return {
-    'Authorization': `Bearer ${user.token}`,
-    'Content-Type': 'application/json'
-  };
+  const headers = { 'Content-Type': 'application/json' };
+  if (user?.token) headers['Authorization'] = `Bearer ${user.token}`;
+  return headers;
 };
 
 const validateSurveyData = (answers) => {
