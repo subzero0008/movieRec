@@ -82,10 +82,10 @@ const HomePage = ({ trendingMovies, isSearching, searchResults }) => {
               <p className="text-gray-400 text-sm">Get recommendations based on your mood</p>
             </Link>
           ) : (
-            <Link to="/register" className="bg-gray-800 rounded-xl p-6 text-center transition hover:scale-105 duration-300 shadow-lg border border-gray-700 hover:border-green-500">
+            <Link to="/survey" className="bg-gray-800 rounded-xl p-6 text-center transition hover:scale-105 duration-300 shadow-lg border border-gray-700 hover:border-green-500">
               <div className="text-4xl mb-3">📋</div>
               <h3 className="text-green-400 font-bold text-lg mb-2">Mood Survey</h3>
-              <p className="text-gray-400 text-sm">Sign up to get mood-based recommendations</p>
+              <p className="text-gray-400 text-sm">Answer a few questions and get movie suggestions</p>
             </Link>
           )}
           <Link to="/top-rated" className="bg-gray-800 rounded-xl p-6 text-center transition hover:scale-105 duration-300 shadow-lg border border-gray-700 hover:border-blue-500">
