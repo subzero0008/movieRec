@@ -110,11 +110,11 @@ export default function Navbar() {
     <Link to="/about" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300">
       About
     </Link>
+    <Link to="/tv" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white transition duration-300">
+      TV Series
+    </Link>
     {user && (
       <>
-        <Link to="/tv" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-blue-700">
-          TV Series
-        </Link>
         <Link
           to="/polls/active"
           className="px-3 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white transition-all duration-300 shadow-md hover:shadow-lg flex items-center"
