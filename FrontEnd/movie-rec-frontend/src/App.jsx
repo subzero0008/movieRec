@@ -189,11 +189,11 @@ function App() {
         {/* Маршрути за анкетата */}
         <Route 
           path="/survey" 
-          element={user ? <Survey /> : <Navigate to="/login" />} 
+          element={<Survey />} 
         />
         <Route 
           path="/survey-results" 
-          element={user ? <SurveyResults /> : <Navigate to="/login" />} 
+          element={<SurveyResults />} 
         />
         <Route path="/polls/active" element={<ActivePollsPage />} />
         <Route path="/create-poll" element={<CreatePollForm />} />
