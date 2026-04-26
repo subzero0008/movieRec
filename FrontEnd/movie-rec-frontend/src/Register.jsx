@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { GoogleLogin } from '@react-oauth/google';
+import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { register } from './services/authService';
 
@@ -178,7 +180,43 @@ const Register = () => {
         Register me
         </button>
       </form>
-      
+
+      <div className="mt-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex-1 border-t border-gray-600"></div>
+          <span className="text-gray-400 text-sm">or sign up with</span>
+          <div className="flex-1 border-t border-gray-600"></div>
+        </div>
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={async (credentialResponse) => {
+              try {
+                const API_URL = import.meta.env.VITE_API_BASE_URL || 'https://movierec-backend-7jqo.onrender.com/api';
+                const response = await fetch(`${API_URL}/account/google-login`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ credential: credentialResponse.credential })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                  navigate('/login');
+                  Swal.fire({ title: 'Success!', text: 'Account created with Google. Please log in.', icon: 'success', background: '#1F2937', color: '#fff', confirmButtonColor: '#EAB308' });
+                } else {
+                  Swal.fire({ title: 'Error', text: data.message || 'Google sign up failed', icon: 'error', background: '#1F2937', color: '#fff', confirmButtonColor: '#EAB308' });
+                }
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+            onError={() => Swal.fire({ title: 'Error', text: 'Google sign up failed', icon: 'error', background: '#1F2937', color: '#fff', confirmButtonColor: '#EAB308' })}
+            theme="filled_black"
+            shape="pill"
+            text="signup_with"
+            locale="en"
+          />
+        </div>
+      </div>
+
       <p className="mt-4 text-white">
        You already have account{' '}
         <a href="/login" className="text-blue-400 hover:underline">
