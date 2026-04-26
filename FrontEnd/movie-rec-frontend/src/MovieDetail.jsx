@@ -69,7 +69,7 @@ function MovieDetail() {
 
   const handleWatchedClick = async () => {
     if (!user?.token) {
-      setWatchedError('Ypu must be logged in');
+      setWatchedError('You must be logged in');
       return;
     }
     if (!id) {
