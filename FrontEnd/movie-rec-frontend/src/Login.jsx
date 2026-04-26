@@ -27,7 +27,7 @@ const Login = () => {
     setError('');
 
     if (!formData.identifier.trim() || !formData.password) {
-      setError('Моля попълнете всички полета');
+      setError('Please fill all the fields');
       return;
     }
 
@@ -37,7 +37,7 @@ const Login = () => {
       console.log('Login response:', response);
 
       if (!response || !response.token) {
-        throw new Error('Невалиден отговор от сървъра');
+        throw new Error('Invalid server respond');
       }
 
       // Подготвяме данните за authLogin
@@ -52,7 +52,7 @@ const Login = () => {
       console.error('Login error:', err);
       const errorMessage = err.response?.data?.message || 
                          err.message || 
-                         'Грешка при влизане. Моля опитайте отново.';
+                         'Error occured when trying to Login, please try again';
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -126,6 +126,7 @@ const Login = () => {
             theme="filled_black"
             shape="pill"
             text="signin_with"
+            locale="en"
           />
         </div>
       </div>
