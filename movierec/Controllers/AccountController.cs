@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MovieRecAPI.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MovieRecAPI.Data;
 using movierec.Models;
@@ -245,6 +246,63 @@ namespace MovieRecAPI.Controllers
                 username = user.UserName
             });
         }
+
+    [HttpPost("google-login")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto model)
+    {
+        try
+        {
+            var payload = await Google.Apis.Auth.GoogleJsonWebSignature.ValidateAsync(model.Credential);
+            var user = await _userManager.FindByEmailAsync(payload.Email);
+            if (user == null)
+            {
+                user = new AppUser
+                {
+                    UserName = payload.Email.Split('@')[0],
+                    Email = payload.Email,
+                    EmailConfirmed = true,
+                    DisplayName = payload.Name
+                };
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded)
+                    return BadRequest(new { message = "Failed to create user" });
+                await _userManager.AddToRoleAsync(user, "User");
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            var primaryRole = roles.FirstOrDefault() ?? "User";
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Role, primaryRole)
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:JwtKey"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Issuer = _configuration["JwtSettings:JwtIssuer"],
+                Audience = _configuration["JwtSettings:JwtAudience"],
+                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:JwtExpireMinutes"])),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwtToken = tokenHandler.WriteToken(token);
+            return Ok(new
+            {
+                message = "Login successful",
+                user = new { userName = user.UserName, email = user.Email, id = user.Id, role = primaryRole },
+                token = jwtToken
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Google login error: {ex.Message}");
+            return BadRequest(new { message = "Invalid Google token" });
+        }
     }
 
-}
+}}
