@@ -867,6 +867,36 @@ public class TMDbService
         });
     }
 
+    public async Task<TrendingTVShowsResponse> DiscoverTVShowsAdvancedAsync(
+        string? genres = null, string sortBy = "popularity.desc",
+        double? minRating = null, string? yearFrom = null, string? yearTo = null, int page = 1)
+    {
+        var cacheKey = $"discover-tv-{genres}-{sortBy}-{minRating}-{yearFrom}-{yearTo}-{page}";
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+            try
+            {
+                var url = $"discover/tv?api_key={_apiKey}&sort_by={sortBy}&page={page}";
+                if (!string.IsNullOrEmpty(genres)) url += $"&with_genres={genres}";
+                if (minRating.HasValue) url += $"&vote_average.gte={minRating}";
+                if (!string.IsNullOrEmpty(yearFrom)) url += $"&first_air_date.gte={yearFrom}";
+                if (!string.IsNullOrEmpty(yearTo)) url += $"&first_air_date.lte={yearTo}";
+                var response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<TrendingTVShowsResponse>(responseContent);
+                ProcessTVShowResults(result?.Results);
+                return result ?? new TrendingTVShowsResponse { Results = new List<TVShow>() };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error discovering TV shows");
+                return new TrendingTVShowsResponse { Results = new List<TVShow>() };
+            }
+        });
+    }
+
     public async Task<List<Genre>> GetTVShowGenresAsync(string language = "en-US")
     {
         var cacheKey = $"tvshow-genres-{language}";

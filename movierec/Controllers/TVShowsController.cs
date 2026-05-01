@@ -222,4 +222,31 @@ public class TVShowsController : ControllerBase
             return StatusCode(500, new { message = "Internal server error" });
         }
     }
+    [HttpGet("discover")]
+    public async Task<IActionResult> DiscoverTVShows(
+        [FromQuery] string? genres = null,
+        [FromQuery] string? sortBy = "popularity.desc",
+        [FromQuery] double? minRating = null,
+        [FromQuery] string? yearFrom = null,
+        [FromQuery] string? yearTo = null,
+        [FromQuery] int page = 1)
+    {
+        try
+        {
+            var result = await _tmdbService.DiscoverTVShowsAdvancedAsync(
+                genres, sortBy ?? "popularity.desc", minRating, yearFrom, yearTo, Math.Min(page, 5));
+            return Ok(new
+            {
+                results = result.Results,
+                page = result.Page,
+                totalPages = result.TotalPages,
+                totalResults = result.TotalResults
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error discovering TV shows");
+            return StatusCode(500, new { message = "Internal server error" });
+        }
+    }
 }

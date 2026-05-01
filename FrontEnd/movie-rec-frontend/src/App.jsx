@@ -30,6 +30,7 @@ import ActivePollsPage from './components/ActivePollsPage';
 import Footer from './components/Footer';
 import HomePage from './components/HomePage';
 import About from './components/About';
+import AdvancedTVSearch from './components/AdvancedTVSearch';
 import AdvancedSearch from './components/AdvancedSearch';
 import EditPollPage from './components/EditPollPage';
 
