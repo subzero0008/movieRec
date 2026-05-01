@@ -185,6 +185,7 @@ function App() {
 
         {/* Добавени маршрути за TV Shows */}
         <Route path="/tv" element={<TvShowsList />} />
+        <Route path="/tv/search" element={<AdvancedTVSearch />} />
         <Route path="/tv/:id" element={<TvShowDetails />} />
 
         {/* Маршрути за анкетата */}
