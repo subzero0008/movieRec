@@ -113,7 +113,7 @@ const Login = () => {
                 });
                 const data = await response.json();
                 if (response.ok) {
-                  authLogin(data);
+                  authLogin({...data, isGoogleUser: true});
                   navigate('/');
                 } else {
                   Swal.fire({ title: 'Error', text: data.message || 'Google login failed', icon: 'error', background: '#1F2937', color: '#fff', confirmButtonColor: '#EAB308' });

@@ -199,7 +199,7 @@ const Register = () => {
                 });
                 const data = await response.json();
                 if (response.ok) {
-                  navigate('/login');
+                  navigate('/login', { state: { googleUser: true } });
                   Swal.fire({ title: 'Success!', text: 'Account created with Google. Please log in.', icon: 'success', background: '#1F2937', color: '#fff', confirmButtonColor: '#EAB308' });
                 } else {
                   Swal.fire({ title: 'Error', text: data.message || 'Google sign up failed', icon: 'error', background: '#1F2937', color: '#fff', confirmButtonColor: '#EAB308' });

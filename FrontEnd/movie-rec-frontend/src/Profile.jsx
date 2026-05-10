@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 
 const Profile = () => {
   const { user, logout } = useAuth();
+  const isGoogleUser = user?.isGoogleUser === true;
   const navigate = useNavigate();
   const [ratings, setRatings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ const Profile = () => {
   
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/movieratings/user/${user.id}?page=1&pageSize=20`, 
+          `${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/movieratings/user/${user.id}?page=1&pageSize=20`, 
           {
             headers: {
               'Authorization': `Bearer ${user.token}`,
@@ -83,7 +84,7 @@ const handleDeleteRating = async (movieId) => {
 
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}'}/MovieRatings/${movieId}`,
+      `${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/MovieRatings/${movieId}`,
       {
         method: 'DELETE',
         headers: {
@@ -106,7 +107,7 @@ const handleDeleteRating = async (movieId) => {
 
   const handleSaveUsernameChange = async () => {
     try {
-      const response = await fetch('${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/Account/update-profile', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/Account/update-profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -137,7 +138,7 @@ const handleDeleteRating = async (movieId) => {
   
   const handleSavePasswordChange = async () => {
     try {
-      const response = await fetch('${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/Account/update-profile', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "https://movierec-backend-7jqo.onrender.com/api"}/Account/update-profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -215,15 +216,17 @@ const handleDeleteRating = async (movieId) => {
                           className="w-full p-3 bg-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm text-gray-400 mb-1">Current Password</label>
-                        <input 
-                          type="password" 
-                          value={currentPassword}
-                          onChange={(e) => setCurrentPassword(e.target.value)}
-                          className="w-full p-3 bg-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        />
-                      </div>
+                      {!isGoogleUser && (
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">Current Password</label>
+                          <input 
+                            type="password" 
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                            className="w-full p-3 bg-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          />
+                        </div>
+                      )}
                       <div className="flex space-x-3">
                         <button 
                           onClick={handleSaveUsernameChange}
@@ -250,7 +253,7 @@ const handleDeleteRating = async (movieId) => {
                 </div>
 
                 {/* Password Section */}
-                <div>
+                {!isGoogleUser && <div>
                   {editPassword ? (
                     <div className="space-y-4">
                       <div>
