@@ -6,6 +6,7 @@ public class UpdateProfileDto
 
     [Required(ErrorMessage = "Current password is required")]
     public string CurrentPassword { get; set; }
+    public bool IsGoogleUser { get; set; } = false;
 
     public string? NewPassword { get; set; }
 }

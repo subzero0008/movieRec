@@ -114,9 +114,10 @@ const handleDeleteRating = async (movieId) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          CurrentPassword: currentPassword,
+          CurrentPassword: isGoogleUser ? '' : currentPassword,
           NewUsername: username,
           NewPassword: '',
+          IsGoogleUser: isGoogleUser,
         }),
       });
   
