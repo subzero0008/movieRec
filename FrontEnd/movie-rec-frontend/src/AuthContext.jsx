@@ -51,7 +51,8 @@ export const AuthProvider = ({ children }) => {
       role: role,
       token: loginResponse.token,
       // Добавяме roles като масив за обратна съвместимост
-      roles: [role]
+      roles: [role],
+      isGoogleUser: loginResponse.isGoogleUser === true
     };
 
     console.log("Processed user data:", userData);
