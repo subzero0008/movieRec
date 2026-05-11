@@ -137,14 +137,31 @@ function App() {
       />
 
       {/* Бутон за отваряне на чатбота */}
-      <button 
-        onClick={() => setShowChatbot(!showChatbot)}
-        className="fixed bottom-6 left-6 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-4 rounded-full shadow-lg transition duration-300 z-50 flex items-center"
+      <button
+        onClick={() => setShowChatbot(prev => !prev)}
+        className="fixed bottom-6 right-6 z-50 group"
+        style={{animation: 'chatbotWiggle 3s ease-in-out infinite'}}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
+        <div className="relative bg-gradient-to-br from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-gray-900 p-4 rounded-full shadow-2xl shadow-yellow-500/40 transition-all duration-300 hover:scale-110 flex items-center justify-center w-16 h-16">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-gray-900 animate-pulse"></span>
+        </div>
+        <span className="absolute bottom-full right-0 mb-2 bg-gray-900 text-yellow-400 text-xs font-semibold px-3 py-1.5 rounded-full border border-yellow-500/30 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg">
+          AI Movie Expert 🎬
+        </span>
       </button>
+      <style>{\`
+        @keyframes chatbotWiggle {
+          0%, 100% { transform: rotate(0deg) scale(1); }
+          10% { transform: rotate(-8deg) scale(1.05); }
+          20% { transform: rotate(8deg) scale(1.05); }
+          30% { transform: rotate(-4deg) scale(1.02); }
+          40% { transform: rotate(4deg) scale(1.02); }
+          50% { transform: rotate(0deg) scale(1); }
+        }
+      \`}</style>
 
    {showChatbot && (
   <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
