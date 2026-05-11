@@ -152,7 +152,7 @@ function App() {
           AI Movie Expert 🎬
         </span>
       </button>
-      <style>{\`
+      <style dangerouslySetInnerHTML={{__html: `
         @keyframes chatbotWiggle {
           0%, 100% { transform: rotate(0deg) scale(1); }
           10% { transform: rotate(-8deg) scale(1.05); }
@@ -161,7 +161,7 @@ function App() {
           40% { transform: rotate(4deg) scale(1.02); }
           50% { transform: rotate(0deg) scale(1); }
         }
-      \`}</style>
+      `}} />
 
    {showChatbot && (
   <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
