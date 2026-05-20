@@ -329,8 +329,21 @@ public class TMDbService
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
+               var bytes = await response.Content.ReadAsByteArrayAsync();
+_logger.LogInformation($"TMDb bytes: {bytes.Length}, first byte: {(bytes.Length > 0 ? bytes[0].ToString() : "empty")}");
+string content;
+if (bytes.Length > 1 && bytes[0] == 0x1f && bytes[1] == 0x8b)
+{
+    using var ms = new System.IO.MemoryStream(bytes);
+    using var gs = new System.IO.Compression.GZipStream(ms, System.IO.Compression.CompressionMode.Decompress);
+    using var sr = new System.IO.StreamReader(gs);
+    content = await sr.ReadToEndAsync();
+}
+else
+{
+    content = System.Text.Encoding.UTF8.GetString(bytes);
+}
+var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
 
                 ProcessMovieResults(result?.Results);
                 return result ?? new MovieSearchResult { Results = new List<Movie>() };
