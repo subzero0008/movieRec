@@ -138,6 +138,11 @@ builder.Services.AddAuthentication(options =>
 .AddCookie();
 builder.Services.AddScoped<AdminController>();
 // Configure TMDb service
+builder.Services.AddHttpClient<TMDbService>()
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate
+    });
 builder.Services.AddHttpClient<TMDbService>(client =>
 {
     client.BaseAddress = new Uri("https://api.themoviedb.org/3/");
