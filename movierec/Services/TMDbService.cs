@@ -26,7 +26,21 @@ public class TMDbService
             new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public async Task<MovieDetails> GetMovieDetailsWithCreditsAsync(int id, string language = "en-US")
+
+    private async Task<string> ReadResponseAsync(HttpResponseMessage response)
+    {
+        var bytes = await response.Content.ReadAsByteArrayAsync();
+        if (bytes.Length > 1 && bytes[0] == 0x1f && bytes[1] == 0x8b)
+        {
+            using var ms = new System.IO.MemoryStream(bytes);
+            using var gs = new System.IO.Compression.GZipStream(ms, System.IO.Compression.CompressionMode.Decompress);
+            using var sr = new System.IO.StreamReader(gs);
+            return await sr.ReadToEndAsync();
+        }
+        return System.Text.Encoding.UTF8.GetString(bytes);
+    }
+
+        public async Task<MovieDetails> GetMovieDetailsWithCreditsAsync(int id, string language = "en-US")
     {
         var cacheKey = $"movie-details-{id}-{language}";
 
@@ -44,7 +58,7 @@ public class TMDbService
                     return CreateDefaultMovieDetails(id); // Използване на новия метод
                 }
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<MovieDetails>(content);
 
                 return NormalizeMovieDetails(result); // Нормализация на резултата
@@ -70,7 +84,7 @@ public class TMDbService
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<SimilarMoviesResult>(content);
 
                 ProcessMovieResults(result?.Results);
@@ -142,7 +156,7 @@ public class TMDbService
             var response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await ReadResponseAsync(response);
             return JsonConvert.DeserializeObject<MovieSearchResult>(content)
                    ?? new MovieSearchResult { Results = new List<Movie>() };
         }
@@ -211,7 +225,7 @@ public class TMDbService
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
 
                 ProcessMovieResults(result?.Results);
@@ -237,7 +251,7 @@ public class TMDbService
                 var url = $"movie/top_rated?api_key={_apiKey}&language={language}&page={page}";
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 ProcessMovieResults(result?.Results);
                 return result ?? new MovieSearchResult { Results = new List<Movie>() };
@@ -269,7 +283,7 @@ public class TMDbService
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
 
                 ProcessMovieResults(result?.Results);
@@ -300,7 +314,7 @@ public class TMDbService
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
 
                 ProcessMovieResults(result?.Results);
@@ -329,21 +343,8 @@ public class TMDbService
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-               var bytes = await response.Content.ReadAsByteArrayAsync();
-_logger.LogInformation($"TMDb bytes: {bytes.Length}, first byte: {(bytes.Length > 0 ? bytes[0].ToString() : "empty")}");
-string content;
-if (bytes.Length > 1 && bytes[0] == 0x1f && bytes[1] == 0x8b)
-{
-    using var ms = new System.IO.MemoryStream(bytes);
-    using var gs = new System.IO.Compression.GZipStream(ms, System.IO.Compression.CompressionMode.Decompress);
-    using var sr = new System.IO.StreamReader(gs);
-    content = await sr.ReadToEndAsync();
-}
-else
-{
-    content = System.Text.Encoding.UTF8.GetString(bytes);
-}
-var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
+               var content = await ReadResponseAsync(response);
+                var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
 
                 ProcessMovieResults(result?.Results);
                 return result ?? new MovieSearchResult { Results = new List<Movie>() };
@@ -371,7 +372,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
             var response = await _httpClient.GetAsync($"movie/{movieId}?api_key={_apiKey}&language=en-US");
             response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await ReadResponseAsync(response);
             var movieDetails = JsonConvert.DeserializeObject<MovieDetails>(content);
 
             var creditsResponse = await _httpClient.GetAsync($"movie/{movieId}/credits?api_key={_apiKey}");
@@ -409,7 +410,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<GenreListResponse>(content);
 
                 return result?.Genres ?? new List<Genre>();
@@ -515,7 +516,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
 
                 ProcessMovieResults(result?.Results);
@@ -547,7 +548,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 return JsonConvert.DeserializeObject<PersonSearchResult>(content);
             }
             catch (Exception ex)
@@ -572,7 +573,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<TrendingTVShowsResponse>(content);
 
                 ProcessTVShowResults(result?.Results);
@@ -604,7 +605,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                     return CreateDefaultTVShowDetails(id);
                 }
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<TVShowDetails>(content);
 
                 return NormalizeTVShowDetails(result);
@@ -631,7 +632,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<TVShowSearchResult>(content);
 
                 ProcessTVShowResults(result?.Results);
@@ -659,7 +660,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<SimilarTVShowsResult>(content);
 
                 ProcessTVShowResults(result?.Results);
@@ -844,7 +845,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var url = $"tv/popular?api_key={_apiKey}&language={language}&page={page}";
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
-                var responseContent = await response.Content.ReadAsStringAsync();
+                var responseContent = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<TrendingTVShowsResponse>(responseContent);
                 ProcessTVShowResults(result?.Results);
                 return result ?? new TrendingTVShowsResponse { Results = new List<TVShow>() };
@@ -869,7 +870,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var url = $"tv/top_rated?api_key={_apiKey}&language={language}&page={page}";
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
-                var responseContent = await response.Content.ReadAsStringAsync();
+                var responseContent = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<TrendingTVShowsResponse>(responseContent);
                 ProcessTVShowResults(result?.Results);
                 return result ?? new TrendingTVShowsResponse { Results = new List<TVShow>() };
@@ -899,7 +900,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 if (!string.IsNullOrEmpty(yearTo)) url += $"&first_air_date.lte={yearTo}";
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
-                var responseContent = await response.Content.ReadAsStringAsync();
+                var responseContent = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<TrendingTVShowsResponse>(responseContent);
                 ProcessTVShowResults(result?.Results);
                 return result ?? new TrendingTVShowsResponse { Results = new List<TVShow>() };
@@ -926,7 +927,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<GenreListResponse>(content);
 
                 return result?.Genres ?? new List<Genre>();
@@ -952,7 +953,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<PaginatedResponse<Movie>>(content);
 
                 ProcessMovieResults(result?.Results);
@@ -979,7 +980,7 @@ var result = JsonConvert.DeserializeObject<MovieSearchResult>(content);
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await ReadResponseAsync(response);
                 var result = JsonConvert.DeserializeObject<PaginatedResponse<TVShow>>(content);
 
                 // Проверка за нулев резултат
