@@ -14,6 +14,8 @@ public class TMDbService
     public TMDbService(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache, ILogger<TMDbService> logger)
     {
         _httpClient = httpClient;
+        _httpClient.DefaultRequestHeaders.AcceptEncoding.Clear();
+        _httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "identity");
         _configuration = configuration;
         _cache = cache;
         _logger = logger;
